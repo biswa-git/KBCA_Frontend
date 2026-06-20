@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import stampBengali from '../assets/stamp_bengali_golden.svg';
 
 interface NavigationProps {
   onOpenMembership?: () => void;
@@ -21,7 +22,16 @@ export default function Navigation({ onOpenMembership, onOpenProfile, isLoggedIn
 
   return (
     <nav className={isScrolled ? 'scrolled' : ''}>
-      <a className="nav-logo" href="#hero">
+      <a className="nav-logo" href="#hero" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <img
+          src={stampBengali}
+          alt="KBCA Stamp"
+          style={{
+            width: '52px',
+            height: '52px',
+            objectFit: 'contain',
+          }}
+        />
         KBCA <span>·</span> কোন্ডাপুর
       </a>
       <ul className="nav-links">
@@ -42,8 +52,8 @@ export default function Navigation({ onOpenMembership, onOpenProfile, isLoggedIn
               {userName}
             </span>
           )}
-          <button 
-            className="nav-cta profile-btn" 
+          <button
+            className="nav-cta profile-btn"
             onClick={onOpenProfile}
             style={{ width: '40px', height: '40px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}
             title="User Profile"
