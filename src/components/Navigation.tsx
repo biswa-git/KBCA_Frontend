@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-//import stampBengali from '../assets/stamp_bengali.svg';
+import stampBengali from '../assets/stamp_bengali.svg';
 
 interface NavigationProps {
   onOpenMembership?: () => void;
@@ -23,15 +23,15 @@ export default function Navigation({ onOpenMembership, onOpenProfile, isLoggedIn
   return (
     <nav className={isScrolled ? 'scrolled' : ''}>
       <a className="nav-logo" href="#hero" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        {/*<img
+        <img
           src={stampBengali}
           alt="KBCA Stamp"
           style={{
-            width: '65px',
-            height: '65px',
+            width: '56px',
+            height: '56px',
             objectFit: 'contain',
           }}
-        />*/}
+        />
         {/* KBCA <span>·</span> কোন্ডাপুর*/}
       </a>
       <ul className="nav-links">
