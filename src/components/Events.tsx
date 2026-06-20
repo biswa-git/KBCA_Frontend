@@ -39,7 +39,7 @@ export default function Events({ isLoggedIn, onOpenMembership }: EventsProps) {
                 onClick={(e) => {
                   e.preventDefault();
                   if (isLoggedIn) {
-                    alert('Successfully registered for Muhurat (Khuti Puja)!');
+                    alert('Registration for Muhurat (Khuti Puja) will begin soon. Stay tuned!');
                   } else if (onOpenMembership) {
                     onOpenMembership();
                   }
