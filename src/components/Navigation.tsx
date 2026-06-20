@@ -23,7 +23,7 @@ export default function Navigation({ onOpenMembership, onOpenProfile, isLoggedIn
   return (
     <nav className={isScrolled ? 'scrolled' : ''}>
       <a className="nav-logo" href="#hero" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <img
+        {/*<img
           src={stampBengali}
           alt="KBCA Stamp"
           style={{
@@ -31,7 +31,7 @@ export default function Navigation({ onOpenMembership, onOpenProfile, isLoggedIn
             height: '65px',
             objectFit: 'contain',
           }}
-        />
+        />*/}
         {/* KBCA <span>·</span> কোন্ডাপুর*/}
       </a>
       <ul className="nav-links">
