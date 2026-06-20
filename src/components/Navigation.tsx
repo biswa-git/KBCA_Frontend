@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import stampBengali from '../assets/stamp_bengali_golden.svg';
+import stampBengali from '../assets/stamp_bengali.svg';
 
 interface NavigationProps {
   onOpenMembership?: () => void;
