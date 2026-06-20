@@ -21,7 +21,8 @@ function App() {
     setIsLoggedIn(!!token);
     
     if (token) {
-      fetch('https://kbca-backend.onrender.com/me', {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      fetch(`${apiUrl}/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => {

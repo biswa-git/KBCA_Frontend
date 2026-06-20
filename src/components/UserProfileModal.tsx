@@ -39,7 +39,8 @@ export default function UserProfileModal({ isOpen, onClose, onLogout }: UserProf
         return;
       }
 
-      fetch('https://kbca-backend.onrender.com/me', {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      fetch(`${apiUrl}/me`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

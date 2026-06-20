@@ -30,7 +30,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     const otp = formData.get('otp') as string;
 
     try {
-      const response = await fetch('https://kbca-backend.onrender.com/verify-otp', {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${apiUrl}/verify-otp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +72,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     try {
       if (isLogin) {
         // Login flow
-        const response = await fetch('https://kbca-backend.onrender.com/login', {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        const response = await fetch(`${apiUrl}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -98,7 +100,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         const phone = formData.get('phone') as string;
         const address = formData.get('address') as string;
 
-        const response = await fetch('https://kbca-backend.onrender.com/register', {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        const response = await fetch(`${apiUrl}/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
