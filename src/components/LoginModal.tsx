@@ -233,7 +233,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   : 'Create an account to become a member of KBCA.'}
               </p>
 
-              <form onSubmit={handleSubmit} className={`membership-form reveal reveal-delay-2 ${isVisible[2] ? 'visible' : ''}`} ref={refs[2]}>
+              <form onSubmit={handleSubmit} className={`membership-form reveal reveal-delay-2 ${isVisible[2] ? 'visible' : ''}`} ref={refs[2] as any}>
                 {!isLogin && (
                   <>
                     <div className="form-group">
