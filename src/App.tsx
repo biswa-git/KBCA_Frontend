@@ -21,7 +21,7 @@ function App() {
     setIsLoggedIn(!!token);
     
     if (token) {
-      fetch('http://localhost:8000/me', {
+      fetch('https://kbca-backend.onrender.com/me', {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => {

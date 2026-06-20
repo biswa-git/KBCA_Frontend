@@ -30,7 +30,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     const otp = formData.get('otp') as string;
 
     try {
-      const response = await fetch('http://localhost:8000/verify-otp', {
+      const response = await fetch('https://kbca-backend.onrender.com/verify-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     try {
       if (isLogin) {
         // Login flow
-        const response = await fetch('http://localhost:8000/login', {
+        const response = await fetch('https://kbca-backend.onrender.com/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -98,7 +98,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         const phone = formData.get('phone') as string;
         const address = formData.get('address') as string;
 
-        const response = await fetch('http://localhost:8000/register', {
+        const response = await fetch('https://kbca-backend.onrender.com/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

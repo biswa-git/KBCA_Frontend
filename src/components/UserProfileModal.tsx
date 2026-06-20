@@ -39,7 +39,7 @@ export default function UserProfileModal({ isOpen, onClose, onLogout }: UserProf
         return;
       }
 
-      fetch('http://localhost:8000/me', {
+      fetch('https://kbca-backend.onrender.com/me', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
