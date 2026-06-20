@@ -22,13 +22,13 @@ export default function Navigation({ onOpenMembership, onOpenProfile, isLoggedIn
 
   return (
     <nav className={isScrolled ? 'scrolled' : ''}>
-      <a className="nav-logo" href="#hero" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <a className="nav-logo" href="#hero" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
         <img
           src={stampBengali}
           alt="KBCA Stamp"
           style={{
-            width: '52px',
-            height: '52px',
+            width: '78px',
+            height: '78px',
             objectFit: 'contain',
           }}
         />
