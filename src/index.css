@@ -116,6 +116,9 @@ nav.scrolled {
   display: flex; 
   gap: 40px; 
   list-style: none;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .nav-links a {
@@ -1137,6 +1140,9 @@ footer {
     width: 100%;
     justify-content: center;
     font-size: 0.68rem;
+    position: relative;
+    left: auto;
+    transform: none;
   }
 
   .nav-cta {
