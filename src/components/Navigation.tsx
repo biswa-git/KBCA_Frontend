@@ -48,8 +48,8 @@ export default function Navigation({ onOpenMembership, onOpenProfile, isLoggedIn
       {isLoggedIn ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {userName && (
-            <span style={{ color: 'var(--gold)', fontSize: '0.9rem', fontWeight: 500, fontFamily: 'var(--font-heading)', letterSpacing: '0.05em' }}>
-              {userName}
+            <span style={{ color: 'var(--gold)', fontSize: '0.7rem', fontWeight: 500, fontFamily: "'DM Sans', sans-serif", letterSpacing: '0.3em', textTransform: 'uppercase' }}>
+              {userName.split(' ')[0]}
             </span>
           )}
           <button
