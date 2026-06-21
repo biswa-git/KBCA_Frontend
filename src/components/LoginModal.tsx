@@ -250,12 +250,15 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor="phone">Phone (Optional)</label>
+                      <label htmlFor="phone">Phone *</label>
                       <input
                         type="tel"
                         id="phone"
                         name="phone"
-                        placeholder="Your phone number"
+                        required
+                        pattern="[0-9]{10}"
+                        title="Please enter a valid 10-digit phone number"
+                        placeholder="Your 10-digit phone number"
                       />
                     </div>
                     <div className="form-group">
