@@ -51,10 +51,14 @@ export default function JoinCTA({ isLoggedIn, onOpenMembership, onOpenProfile }:
           ref={refs[3]}
         >
           <button
-            onClick={isLoggedIn ? onOpenProfile : onOpenMembership}
+            onClick={() => {
+              if (!isLoggedIn && onOpenMembership) {
+                onOpenMembership();
+              }
+            }}
             className="btn-primary"
           >
-            {isLoggedIn ? 'Your Profile' : 'Login / Register'}
+            Become a Member
           </button>
           <a href="#" className="btn-ghost">
             Volunteer With Us

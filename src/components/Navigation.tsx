@@ -65,7 +65,7 @@ export default function Navigation({ onOpenMembership, onOpenProfile, isLoggedIn
           </button>
         </div>
       ) : (
-        <button className="nav-cta" onClick={onOpenMembership}>Login/Register</button>
+        <button className="nav-cta" onClick={onOpenMembership}>Login / Register</button>
       )}
     </nav>
   );
