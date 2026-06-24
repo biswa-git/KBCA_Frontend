@@ -16,25 +16,36 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
 
+  // Password-reset token extracted from the URL (?reset_token=...)
+  const [resetToken, setResetToken] = useState('');
+
+  // On mount: detect ?reset_token= in the URL and auto-open the login modal
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('reset_token');
+    if (token) {
+      setResetToken(token);
+      setShowLoginModal(true);
+    }
+  }, []);
+
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     setIsLoggedIn(!!token);
-    
+
     if (token) {
       const apiUrl = import.meta.env.VITE_API_URL;
       fetch(`${apiUrl}/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
-      .then(res => {
-        if (res.ok) return res.json();
-        throw new Error('Failed to fetch user');
-      })
-      .then(data => {
-        if (data.full_name) {
-          setUserName(data.full_name);
-        }
-      })
-      .catch(err => console.error(err));
+        .then(res => {
+          if (res.ok) return res.json();
+          throw new Error('Failed to fetch user');
+        })
+        .then(data => {
+          if (data.full_name) setUserName(data.full_name);
+        })
+        .catch(err => console.error(err));
     } else {
       setUserName(null);
     }
@@ -47,16 +58,22 @@ function App() {
     window.location.reload();
   };
 
+  const handleCloseLoginModal = () => {
+    setShowLoginModal(false);
+    // If it was a reset flow, clean the token from state (URL already cleaned by the modal)
+    setResetToken('');
+  };
+
   return (
     <div className={`app-wrapper ${showLoginModal || showProfileModal ? 'member-panel-open' : ''}`}>
       <CustomCursor />
-      <Navigation 
-        isLoggedIn={isLoggedIn} 
+      <Navigation
+        isLoggedIn={isLoggedIn}
         userName={userName}
-        onOpenMembership={() => setShowLoginModal(true)} 
+        onOpenMembership={() => setShowLoginModal(true)}
         onOpenProfile={() => setShowProfileModal(true)}
       />
-      
+
       <div className="app-main">
         <Hero />
         <About />
@@ -68,10 +85,11 @@ function App() {
 
       <LoginModal
         isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
+        onClose={handleCloseLoginModal}
+        resetToken={resetToken}
       />
 
-      <UserProfileModal 
+      <UserProfileModal
         isOpen={showProfileModal}
         onClose={() => setShowProfileModal(false)}
         onLogout={handleLogout}
