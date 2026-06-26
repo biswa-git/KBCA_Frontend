@@ -7,7 +7,7 @@ declare global {
 }
 
 const CASHFREE_SDK_SRC = 'https://sdk.cashfree.com/js/v3/cashfree.js';
-const CASHFREE_BACKEND_ORDER_URL = '/cashfree/orders';
+const CASHFREE_BACKEND_ORDER_URL = '/api/cashfree-orders';
 
 const loadCashfreeSdk = (): Promise<void> => {
   if (window.Cashfree) {
@@ -179,9 +179,18 @@ export default function MeetupRegistrationModal({ isOpen, onClose }: MeetupRegis
         }),
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      let data: any = {};
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = { message: text };
+        }
+      }
+
       if (!response.ok) {
-        throw new Error(data?.message || 'Failed to create payment order');
+        throw new Error(data?.message || response.statusText || 'Failed to create payment order');
       }
 
       const paymentSessionId = data.payment_session_id ?? data.paymentSessionId;
