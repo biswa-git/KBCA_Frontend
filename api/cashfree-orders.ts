@@ -1,6 +1,6 @@
 const CASHFREE_API_URL = 'https://sandbox.cashfree.com/pg/orders';
-const CASHFREE_APP_ID = process.env.CASHFREE_APP_ID;
-const CASHFREE_SECRET = process.env.CASHFREE_SECRET;
+const CASHFREE_APP_ID = process.env.CASHFREE_APP_ID ?? process.env.VITE_CASHFREE_APP_ID;
+const CASHFREE_SECRET = process.env.CASHFREE_SECRET ?? process.env.VITE_CASHFREE_SECRET;
 const CASHFREE_API_VERSION = process.env.CASHFREE_API_VERSION ?? '2025-01-01';
 
 export default async function handler(req: any, res: any) {
