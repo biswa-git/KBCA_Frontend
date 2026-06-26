@@ -99,6 +99,19 @@ export default function LoginModal({
 
   const clearMessages = () => { setError(null); setSuccess(null); };
 
+  // Auto-clear messages after 2 seconds (unless it's the special register nudge)
+  useEffect(() => {
+    if (error === 'Email not verified. Please register to get an OTP.') return;
+
+    let timer: NodeJS.Timeout;
+    if (error || success) {
+      timer = setTimeout(() => {
+        clearMessages();
+      }, 2000);
+    }
+    return () => clearTimeout(timer);
+  }, [error, success]);
+
   /* ─── LOGIN ─────────────────────────────────────────────────────── */
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -252,45 +265,60 @@ export default function LoginModal({
   };
 
   /* ─── SHARED FEEDBACK ────────────────────────────────────────────── */
-  const renderMessages = () => (
-    <>
-      {error && (
+  const renderMessages = () => {
+    if (!error && !success) return null;
+
+    const isSpecialError = error === 'Email not verified. Please register to get an OTP.';
+
+    return (
+      <div style={{
+        position: 'fixed',
+        top: '24px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 10,
+        minWidth: '280px',
+        maxWidth: '90%',
+        padding: '16px 24px',
+        borderRadius: '8px',
+        background: 'var(--bg-dark, #0a0a0a)',
+        border: `1px solid ${error ? 'var(--red-bindi)' : 'var(--gold)'}`,
+        boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '12px',
+        animation: 'toastFadeIn 0.3s ease-out forwards',
+      }}>
+        <style>{`
+          @keyframes toastFadeIn {
+            from { opacity: 0; transform: translate(-50%, -20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+          }
+        `}</style>
         <div style={{
-          color: 'var(--red-bindi)',
-          marginTop: '16px',
+          color: error ? 'var(--red-bindi)' : 'var(--gold)',
           textAlign: 'center',
-          fontSize: '0.85rem',
+          fontSize: '0.9rem',
+          fontWeight: 500,
           lineHeight: '1.5',
         }}>
-          {/* Special case: unverified email nudges user to register */}
-          {error === 'Email not verified. Please register to get an OTP.' ? (
-            <div style={{
-              padding: '20px',
-              border: '1px solid var(--gold-dim)',
-              background: 'rgba(201,168,76,0.05)',
-            }}>
-              <div style={{ color: 'var(--cream)', marginBottom: '16px' }}>
-                Email not verified. Please register to get an OTP.
-              </div>
-              <button
-                type="button"
-                onClick={() => { clearMessages(); setView('register'); }}
-                className="btn-ghost"
-                style={{ fontSize: '0.75rem', padding: '8px 20px' }}
-              >
-                Switch to Register
-              </button>
-            </div>
-          ) : error}
+          {error || success}
         </div>
-      )}
-      {success && (
-        <div style={{ color: 'var(--gold)', marginTop: '16px', textAlign: 'center', fontSize: '0.85rem' }}>
-          {success}
-        </div>
-      )}
-    </>
-  );
+
+        {isSpecialError && (
+          <button
+            type="button"
+            onClick={() => { clearMessages(); setView('register'); }}
+            className="btn-ghost"
+            style={{ fontSize: '0.75rem', padding: '8px 20px', borderColor: 'var(--gold-dim)', color: 'var(--cream)' }}
+          >
+            Switch to Register
+          </button>
+        )}
+      </div>
+    );
+  };
 
   /* ─── SUBMIT BUTTON ──────────────────────────────────────────────── */
   const SubmitBtn = ({ label }: { label: string }) => (
@@ -323,7 +351,8 @@ export default function LoginModal({
                 We've sent a 6-digit code to <strong style={{ color: 'var(--gold)' }}>{registrationEmail}</strong>.
               </p>
               <form onSubmit={handleOtp} className="membership-form reveal visible" style={{ transform: 'none', opacity: 1 }}>
-                <div className="form-group">
+                <div className="form-group" style={{ position: 'relative' }}>
+                  {renderMessages()}
                   <label htmlFor="otp">Verification Code *</label>
                   <input
                     type="text"
@@ -335,7 +364,6 @@ export default function LoginModal({
                     style={{ textAlign: 'center', letterSpacing: '4px', fontSize: '1.2rem' }}
                   />
                 </div>
-                {renderMessages()}
                 <SubmitBtn label="Verify & Login" />
               </form>
               <div className="form-note reveal visible" style={{ marginTop: '24px', textAlign: 'center', transform: 'none', opacity: 1 }}>
@@ -357,7 +385,8 @@ export default function LoginModal({
                 Enter your registered email address and we'll send you a secure reset link, valid for 15 minutes.
               </p>
               <form onSubmit={handleForgotPassword} className="membership-form reveal visible" style={{ transform: 'none', opacity: 1 }}>
-                <div className="form-group">
+                <div className="form-group" style={{ position: 'relative' }}>
+                  {renderMessages()}
                   <label htmlFor="forgot-email">Email *</label>
                   <input
                     type="email"
@@ -368,7 +397,6 @@ export default function LoginModal({
                     autoComplete="email"
                   />
                 </div>
-                {renderMessages()}
                 <SubmitBtn label="Send Reset Link" />
               </form>
               <div className="form-note reveal visible" style={{ marginTop: '24px', textAlign: 'center', transform: 'none', opacity: 1 }}>
@@ -428,7 +456,8 @@ export default function LoginModal({
                 Choose a strong new password for your KBCA account.
               </p>
               <form onSubmit={handleResetPassword} className="membership-form reveal visible" style={{ transform: 'none', opacity: 1 }}>
-                <div className="form-group">
+                <div className="form-group" style={{ position: 'relative' }}>
+                  {renderMessages()}
                   <label htmlFor="new_password">New Password *</label>
                   <input
                     type="password"
@@ -452,7 +481,6 @@ export default function LoginModal({
                     autoComplete="new-password"
                   />
                 </div>
-                {renderMessages()}
                 <SubmitBtn label="Update Password" />
               </form>
             </>
@@ -508,7 +536,8 @@ export default function LoginModal({
                   </>
                 )}
 
-                <div className="form-group">
+                <div className="form-group" style={{ position: 'relative' }}>
+                  {renderMessages()}
                   <label htmlFor="email">Email *</label>
                   <input type="email" id="email" name="email" required placeholder="your@email.com" />
                 </div>
@@ -526,8 +555,6 @@ export default function LoginModal({
                     </LinkButton>
                   </div>
                 )}
-
-                {renderMessages()}
 
                 <SubmitBtn label={view === 'login' ? 'Login' : 'Register'} />
               </form>
