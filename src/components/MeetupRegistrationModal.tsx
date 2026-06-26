@@ -415,19 +415,19 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
                 We found your Muhurat registration. Here are the details we have on file.
               </p>
 
-              <div style={{ marginTop: '24px', width: '100%', padding: '18px 20px', borderRadius: '16px', border: '1px solid rgba(255, 215, 130, 0.18)', background: 'rgba(250, 247, 242, 0.03)' }}>
-                <div style={{ fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gold-dim)', marginBottom: '12px' }}>
+              <div style={{ marginTop: '24px', width: '100%', padding: '20px 22px', borderRadius: '18px', border: '1px solid var(--border-strong)', background: 'linear-gradient(135deg, rgba(255,215,130,0.12), rgba(250,247,242,0.03))', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
+                <div style={{ fontSize: '0.72rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '14px', fontWeight: 700 }}>
                   Registration details
                 </div>
-                <div style={{ display: 'grid', gap: '10px', textAlign: 'left', color: 'var(--cream)' }}>
-                  <div><strong>Venue:</strong> {existingRegistration.venue}</div>
-                  <div><strong>Date:</strong> {existingRegistration.date}</div>
-                  <div><strong>Time:</strong> {existingRegistration.time}</div>
-                  <div><strong>Total persons:</strong> {existingRegistration.adults + existingRegistration.children_6_12 + existingRegistration.children_under_6}</div>
-                  <div><strong>Adults:</strong> {existingRegistration.adults}</div>
-                  <div><strong>Children (6–12):</strong> {existingRegistration.children_6_12}</div>
-                  <div><strong>Children (Under 6):</strong> {existingRegistration.children_under_6}</div>
-                  <div><strong>Amount paid:</strong> ₹{existingRegistration.amount_paid.toLocaleString('en-IN')}</div>
+                <div style={{ display: 'grid', gap: '10px', textAlign: 'left', color: 'var(--cream)', fontSize: '0.95rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Venue</span><strong>{existingRegistration.venue}</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Date</span><strong>{existingRegistration.date}</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Time</span><strong>{existingRegistration.time}</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Total persons</span><strong>{existingRegistration.adults + existingRegistration.children_6_12 + existingRegistration.children_under_6}</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Adults</span><strong>{existingRegistration.adults}</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Children (6–12)</span><strong>{existingRegistration.children_6_12}</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Children (Under 6)</span><strong>{existingRegistration.children_under_6}</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}><span style={{ color: 'var(--gold-dim)' }}>Amount paid</span><strong style={{ color: 'var(--gold)' }}>₹{existingRegistration.amount_paid.toLocaleString('en-IN')}</strong></div>
                 </div>
               </div>
 
@@ -540,19 +540,19 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
               </p>
 
               {successfulRegistration && (
-                <div style={{ marginTop: '24px', width: '100%', padding: '18px 20px', borderRadius: '16px', border: '1px solid rgba(255, 215, 130, 0.18)', background: 'rgba(250, 247, 242, 0.03)' }}>
-                  <div style={{ fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gold-dim)', marginBottom: '12px' }}>
+                <div style={{ marginTop: '24px', width: '100%', padding: '20px 22px', borderRadius: '18px', border: '1px solid var(--border-strong)', background: 'linear-gradient(135deg, rgba(255,215,130,0.12), rgba(250,247,242,0.03))', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
+                  <div style={{ fontSize: '0.72rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '14px', fontWeight: 700 }}>
                     Registration details
                   </div>
-                  <div style={{ display: 'grid', gap: '10px', textAlign: 'left', color: 'var(--cream)' }}>
-                    <div><strong>Venue:</strong> {successfulRegistration.venue}</div>
-                    <div><strong>Date:</strong> {successfulRegistration.date}</div>
-                    <div><strong>Time:</strong> {successfulRegistration.time}</div>
-                    <div><strong>Total persons:</strong> {successfulRegistration.adults + successfulRegistration.children_6_12 + successfulRegistration.children_under_6}</div>
-                    <div><strong>Adults:</strong> {successfulRegistration.adults}</div>
-                    <div><strong>Children (6–12):</strong> {successfulRegistration.children_6_12}</div>
-                    <div><strong>Children (Under 6):</strong> {successfulRegistration.children_under_6}</div>
-                    <div><strong>Amount paid:</strong> ₹{successfulRegistration.amount_paid.toLocaleString('en-IN')}</div>
+                  <div style={{ display: 'grid', gap: '10px', textAlign: 'left', color: 'var(--cream)', fontSize: '0.95rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Venue</span><strong>{successfulRegistration.venue}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Date</span><strong>{successfulRegistration.date}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Time</span><strong>{successfulRegistration.time}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Total persons</span><strong>{successfulRegistration.adults + successfulRegistration.children_6_12 + successfulRegistration.children_under_6}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Adults</span><strong>{successfulRegistration.adults}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Children (6–12)</span><strong>{successfulRegistration.children_6_12}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Children (Under 6)</span><strong>{successfulRegistration.children_under_6}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}><span style={{ color: 'var(--gold-dim)' }}>Amount paid</span><strong style={{ color: 'var(--gold)' }}>₹{successfulRegistration.amount_paid.toLocaleString('en-IN')}</strong></div>
                   </div>
                 </div>
               )}
