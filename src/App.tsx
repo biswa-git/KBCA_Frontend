@@ -62,6 +62,7 @@ function App() {
     setUserName(null);
     setShowProfileModal(false);
     setShowLoginModal(false);
+    setResetToken(''); // clear any stale reset token so re-opening login shows the login view
   }, []);
 
   useEffect(() => {
