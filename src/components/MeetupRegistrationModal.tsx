@@ -190,7 +190,8 @@ export default function MeetupRegistrationModal({ isOpen, onClose }: MeetupRegis
       }
 
       if (!response.ok) {
-        throw new Error(data?.message || response.statusText || 'Failed to create payment order');
+        const backendMessage = data?.message || data?.error;
+        throw new Error(backendMessage || response.statusText || 'Failed to create payment order');
       }
 
       const paymentSessionId = data.payment_session_id ?? data.paymentSessionId;

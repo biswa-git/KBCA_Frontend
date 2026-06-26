@@ -42,6 +42,9 @@ export default async function handler(req: any, res: any) {
 
     try {
       const data = JSON.parse(text);
+      if (data && typeof data === 'object' && !('message' in data) && 'error' in data) {
+        (data as any).message = (data as any).error;
+      }
       res.status(cfRes.status).json(data);
     } catch {
       res.status(cfRes.status).send(text);
