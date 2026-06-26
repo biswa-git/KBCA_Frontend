@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { apiFetch } from '../api';
 
 declare global {
   interface Window {
@@ -35,12 +36,13 @@ const loadCashfreeSdk = (): Promise<void> => {
 interface MeetupRegistrationModalProps {
   isOpen: boolean;
   onClose: () => void;
+  userEmail: string | null;
 }
 
 const ADULT_RATE = 250;
 const CHILD_RATE = 150;
 
-export default function MeetupRegistrationModal({ isOpen, onClose }: MeetupRegistrationModalProps) {
+export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: MeetupRegistrationModalProps) {
   const [adults, setAdults] = useState(1);
   const [kidsOlder, setKidsOlder] = useState(0);
   const [kidsUnder, setKidsUnder] = useState(0);
@@ -124,7 +126,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose }: MeetupRegis
         width: '100%',
         height: '100%',
       },
-    }).then((result: any) => {
+    }).then(async (result: any) => {
       setCheckoutOpen(false);
       setPendingPaymentSessionId(null);
 
@@ -135,6 +137,31 @@ export default function MeetupRegistrationModal({ isOpen, onClose }: MeetupRegis
       }
 
       if (result.paymentDetails) {
+        if (!userEmail) {
+          setPaymentError('Please log in before completing registration.');
+          setIsProcessing(false);
+          return;
+        }
+
+        const apiUrl = import.meta.env.VITE_API_URL;
+        const registrationResponse = await apiFetch(`${apiUrl}/meetup-registration`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            adults,
+            children_6_12: kidsOlder,
+            children_under_6: kidsUnder,
+            amount_paid: total,
+          }),
+        });
+
+        if (!registrationResponse.ok) {
+          const errorText = await registrationResponse.text();
+          throw new Error(errorText || 'Failed to record registration after payment');
+        }
+
         setSubmitted(true);
         setIsProcessing(false);
       }
@@ -159,6 +186,10 @@ export default function MeetupRegistrationModal({ isOpen, onClose }: MeetupRegis
 
     try {
       const orderId = `kbca_meetup_${Date.now()}`;
+      if (!userEmail) {
+        throw new Error('Please log in before making a payment.');
+      }
+
       const response = await fetch(CASHFREE_BACKEND_ORDER_URL, {
         method: 'POST',
         headers: {

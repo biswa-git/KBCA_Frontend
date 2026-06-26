@@ -17,6 +17,7 @@ function App() {
   const [showMeetupModal, setShowMeetupModal] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   // Password-reset token extracted from the URL (?token=...)
   const [resetToken, setResetToken] = useState('');
@@ -49,10 +50,12 @@ function App() {
         })
         .then(data => {
           if (data.full_name) setUserName(data.full_name);
+          if (data.email) setUserEmail(data.email);
         })
         .catch(err => console.error(err));
     } else {
       setUserName(null);
+      setUserEmail(null);
     }
   }, [showLoginModal, showProfileModal]);
 
@@ -115,6 +118,7 @@ function App() {
       <MeetupRegistrationModal
         isOpen={showMeetupModal}
         onClose={() => setShowMeetupModal(false)}
+        userEmail={userEmail}
       />
     </div>
   );
