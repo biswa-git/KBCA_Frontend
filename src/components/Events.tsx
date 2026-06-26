@@ -6,7 +6,7 @@ interface EventsProps {
 }
 
 export default function Events({ isLoggedIn, onOpenMembership }: EventsProps) {
-  const { refs, isVisible } = useScrollReveal(5);
+  const { refs, isVisible } = useScrollReveal(3);
 
   return (
     <section className="events" id="events">
@@ -191,64 +191,6 @@ export default function Events({ isLoggedIn, onOpenMembership }: EventsProps) {
             </div>
           </div>
 
-          {/*
-          <div
-            className={`event-card reveal reveal-delay-1 ${isVisible[3] ? 'visible' : ''}`}
-            ref={refs[3]}
-          >
-            <div className="event-date-block">
-              <span className="event-month">May 2025</span>
-              <div className="event-day">09</div>
-            </div>
-            <div className="event-bengali-title">রবীন্দ্র জয়ন্তী</div>
-            <h3 className="event-title">Rabindra Jayanti</h3>
-            <p className="event-desc">
-              An evening celebrating the birth of the Bard — music, poetry, dance, and spoken
-              word in the master's honour.
-            </p>
-            <div className="event-meta">
-              <span>🎵 Musical Evening</span>
-            </div>
-          </div>
-
-          <div
-            className={`event-card reveal reveal-delay-2 ${isVisible[3] ? 'visible' : ''}`}
-            ref={refs[3]}
-          >
-            <div className="event-date-block">
-              <span className="event-month">January 2026</span>
-              <div className="event-day">14</div>
-            </div>
-            <div className="event-bengali-title">পৌষ পার্বণ</div>
-            <h3 className="event-title">Poush Parbon</h3>
-            <p className="event-desc">
-              Winter harvest festival with authentic Bengali sweets, pitha-making, folk music,
-              and the warmth of community.
-            </p>
-            <div className="event-meta">
-              <span>🍮 Food & Culture</span>
-            </div>
-          </div>
-
-          <div
-            className={`event-card reveal reveal-delay-3 ${isVisible[4] ? 'visible' : ''}`}
-            ref={refs[4]}
-          >
-            <div className="event-date-block">
-              <span className="event-month">April 2026</span>
-              <div className="event-day">15</div>
-            </div>
-            <div className="event-bengali-title">নববর্ষ</div>
-            <h3 className="event-title">Pohela Boishakh</h3>
-            <p className="event-desc">
-              Bengali New Year celebrations — shubho nababarsha! Processions, art, and a new
-              beginning for the community.
-            </p>
-            <div className="event-meta">
-              <span>🎊 New Year Celebration</span>
-            </div>
-          </div>
-          */}
         </div>
       </div>
     </section>

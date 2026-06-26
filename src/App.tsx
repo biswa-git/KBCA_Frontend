@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import Navigation from './components/Navigation';
 import CustomCursor from './components/CustomCursor';
 import Hero from './components/Hero';
@@ -17,7 +17,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
 
-  // Password-reset token extracted from the URL (?reset_token=...)
+  // Password-reset token extracted from the URL (?token=...)
   const [resetToken, setResetToken] = useState('');
 
   // On mount: detect reset-password route or token query param and open the reset modal
@@ -55,19 +55,20 @@ function App() {
     }
   }, [showLoginModal, showProfileModal]);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     setIsLoggedIn(false);
+    setUserName(null);
     setShowProfileModal(false);
-    window.location.reload();
-  };
+    setShowLoginModal(false);
+  }, []);
 
   useEffect(() => {
     const handleAuthExpired = () => handleLogout();
     window.addEventListener('auth-expired', handleAuthExpired);
     return () => window.removeEventListener('auth-expired', handleAuthExpired);
-  }, []);
+  }, [handleLogout]);
 
   const handleCloseLoginModal = () => {
     setShowLoginModal(false);

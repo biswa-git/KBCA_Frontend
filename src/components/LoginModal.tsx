@@ -524,7 +524,7 @@ export default function LoginModal({
               <form
                 onSubmit={view === 'login' ? handleLogin : handleRegister}
                 className={`membership-form reveal reveal-delay-2 ${isVisible[2] || bypassReveal ? 'visible' : ''}`}
-                ref={refs[2] as any}
+                ref={refs[2]}
                 style={bypassReveal ? { transform: 'none', opacity: 1 } : undefined}
               >
                 {view === 'register' && (
