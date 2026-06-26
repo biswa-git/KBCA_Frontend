@@ -20,10 +20,10 @@ function App() {
   // Password-reset token extracted from the URL (?reset_token=...)
   const [resetToken, setResetToken] = useState('');
 
-  // On mount: detect ?reset_token= in the URL and auto-open the login modal
+  // On mount: detect ?token= in the URL and auto-open the login modal on the reset view
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const token = params.get('reset_token');
+    const token = params.get('token');
     if (token) {
       setResetToken(token);
       setShowLoginModal(true);
