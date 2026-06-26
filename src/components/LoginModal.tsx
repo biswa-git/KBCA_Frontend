@@ -291,7 +291,8 @@ export default function LoginModal({
   const renderMessages = () => {
     if (!error && !success) return null;
 
-    const isSpecialError = error === 'Email not verified. Please register to get an OTP.';
+    const isRegisterNudge = error === 'Email not verified. Please register to get an OTP.';
+    const isDuplicateEmail = error === 'An account with this email already exists. Please log in instead.';
 
     return (
       <div style={{
@@ -329,7 +330,7 @@ export default function LoginModal({
           {error || success}
         </div>
 
-        {isSpecialError && (
+        {isRegisterNudge && (
           <button
             type="button"
             onClick={() => { clearMessages(); setView('register'); }}
@@ -337,6 +338,17 @@ export default function LoginModal({
             style={{ fontSize: '0.75rem', padding: '8px 20px', borderColor: 'var(--gold-dim)', color: 'var(--cream)' }}
           >
             Switch to Register
+          </button>
+        )}
+
+        {isDuplicateEmail && (
+          <button
+            type="button"
+            onClick={() => { clearMessages(); goToLogin(); }}
+            className="btn-ghost"
+            style={{ fontSize: '0.75rem', padding: '8px 20px', borderColor: 'var(--gold-dim)', color: 'var(--cream)' }}
+          >
+            Switch to Login
           </button>
         )}
       </div>
