@@ -74,14 +74,22 @@ export default function LoginModal({
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Tracks whether we just completed a password reset so the login view
-  // can bypass scroll-reveal animations (which won't re-fire for already-mounted elements).
-  const [postReset, setPostReset] = useState(false);
+  // When navigating to the login/register view mid-session (from forgot, reset, otp, etc.)
+  // the IntersectionObserver won't re-fire for already-mounted elements, so we bypass
+  // scroll-reveal animations to keep everything visible.
+  const [bypassAnimation, setBypassAnimation] = useState(false);
+
+  // Helper: navigate to login with animation bypass
+  const goToLogin = () => {
+    setBypassAnimation(true);
+    setView('login');
+    clearMessages();
+  };
 
   // If the modal was opened with a reset token, the login/register elements
   // aren't mounted initially, so useScrollReveal won't observe them. We bypass the animation.
-  // Also bypass when transitioning back to login after a successful reset.
-  const bypassReveal = !!resetToken || postReset;
+  // Also bypass when transitioning back to login mid-session.
+  const bypassReveal = !!resetToken || bypassAnimation;
 
   // When the modal opens with a reset token, jump straight to the reset view
   useEffect(() => {
@@ -92,13 +100,13 @@ export default function LoginModal({
     }
   }, [isOpen, resetToken]);
 
-  // When modal opens fresh (no reset token), start at the initialView and clear postReset
+  // When modal opens fresh (no reset token), start at the initialView and clear bypassAnimation
   useEffect(() => {
     if (isOpen && !resetToken) {
       setView(initialView);
       setError(null);
       setSuccess(null);
-      setPostReset(false);
+      setBypassAnimation(false);
     }
   }, [isOpen, initialView]);
 
@@ -203,7 +211,7 @@ export default function LoginModal({
       localStorage.setItem('access_token', data.access_token);
       localStorage.setItem('refresh_token', data.refresh_token);
       setSuccess('Verification successful! Logging you in…');
-      setTimeout(() => { setView('login'); onClose(); }, 1500);
+      setTimeout(() => { setBypassAnimation(true); setView('login'); onClose(); }, 1500);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -270,8 +278,7 @@ export default function LoginModal({
       setSuccess('Password updated! Redirecting to login…');
       setTimeout(() => {
         window.history.replaceState({}, document.title, window.location.pathname);
-        setPostReset(true); // ensure login form bypasses scroll-reveal
-        setView('login');
+        goToLogin();
       }, 2000);
     } catch (err: any) {
       setError(err.message);
@@ -416,7 +423,7 @@ export default function LoginModal({
                 <SubmitBtn label="Send Reset Link" />
               </form>
               <div className="form-note reveal visible" style={{ marginTop: '24px', textAlign: 'center', transform: 'none', opacity: 1 }}>
-                <LinkButton onClick={() => { setView('login'); clearMessages(); }}>
+                <LinkButton onClick={goToLogin}>
                   Back to Login
                 </LinkButton>
               </div>
@@ -454,7 +461,7 @@ export default function LoginModal({
                   Try a different email
                 </LinkButton>
                 <span style={{ color: 'var(--muted)', margin: '0 16px', fontSize: '0.8rem' }}>or</span>
-                <LinkButton onClick={() => { setView('login'); clearMessages(); }}>
+                <LinkButton onClick={goToLogin}>
                   Back to Login
                 </LinkButton>
               </div>
