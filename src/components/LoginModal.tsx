@@ -465,18 +465,27 @@ export default function LoginModal({
                 Choose a strong new password for your KBCA account.
               </p>
               <form onSubmit={handleResetPassword} className="membership-form reveal visible" style={{ transform: 'none', opacity: 1 }}>
-                <div className="form-group">
-                  <label htmlFor="token">Reset Token *</label>
+                {resetToken ? (
+                  /* Token came from the URL — keep it hidden, never show it on screen */
                   <input
-                    type="text"
-                    id="token"
+                    type="hidden"
                     name="token"
-                    required={!resetToken}
-                    placeholder="Enter token from email"
-                    defaultValue={resetToken}
-                    autoComplete="one-time-code"
+                    value={resetToken}
                   />
-                </div>
+                ) : (
+                  /* No URL token — let the user paste the token from their email */
+                  <div className="form-group">
+                    <label htmlFor="token">Reset Token *</label>
+                    <input
+                      type="password"
+                      id="token"
+                      name="token"
+                      required
+                      placeholder="Paste token from your email"
+                      autoComplete="one-time-code"
+                    />
+                  </div>
+                )}
                 <div className="form-group">
                   <label htmlFor="new_password">New Password *</label>
                   <input
