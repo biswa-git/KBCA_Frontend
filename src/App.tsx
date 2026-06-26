@@ -20,12 +20,17 @@ function App() {
   // Password-reset token extracted from the URL (?reset_token=...)
   const [resetToken, setResetToken] = useState('');
 
-  // On mount: detect ?token= in the URL and auto-open the login modal on the reset view
+  // On mount: detect reset-password route or token query param and open the reset modal
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
-    if (token) {
-      setResetToken(token);
+    const isResetPath = window.location.pathname.endsWith('/reset-password');
+
+    if (token || isResetPath) {
+      if (token) {
+        setResetToken(token);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
       setShowLoginModal(true);
     }
   }, []);

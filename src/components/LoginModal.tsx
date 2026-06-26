@@ -10,6 +10,7 @@ interface LoginModalProps {
   resetToken?: string;
 }
 
+
 /* Reusable inline link-style button */
 function LinkButton({
   onClick,
@@ -93,7 +94,7 @@ export default function LoginModal({
       setError(null);
       setSuccess(null);
     }
-  }, [isOpen]);
+  }, [isOpen, initialView]);
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -234,6 +235,7 @@ export default function LoginModal({
     clearMessages();
     setIsLoading(true);
     const formData = new FormData(e.currentTarget);
+    const tokenValue = formData.get('token') as string || resetToken;
     const newPassword = formData.get('new_password') as string;
     const confirmPassword = formData.get('confirm_password') as string;
 
@@ -243,19 +245,24 @@ export default function LoginModal({
       return;
     }
 
+    if (!tokenValue) {
+      setError('Please enter the reset token from your email.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch(`${apiUrl}/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: resetToken, new_password: newPassword }),
+        body: JSON.stringify({ token: tokenValue, new_password: newPassword }),
       });
       if (!response.ok) {
         const err = await response.json();
-        throw new Error(err.detail || 'Reset failed. The link may have expired.');
+        throw new Error(err.detail || 'Reset failed. The token may be invalid or expired.');
       }
       setSuccess('Password updated! Redirecting to login…');
       setTimeout(() => {
-        // Remove token from URL cleanly
         window.history.replaceState({}, document.title, window.location.pathname);
         setView('login');
       }, 2000);
@@ -342,6 +349,8 @@ export default function LoginModal({
 
         <div className="become-member-inner">
 
+          {renderMessages()}
+
           {/* ── OTP ── */}
           {view === 'otp' && (
             <>
@@ -353,8 +362,7 @@ export default function LoginModal({
                 We've sent a 6-digit code to <strong style={{ color: 'var(--gold)' }}>{registrationEmail}</strong>.
               </p>
               <form onSubmit={handleOtp} className="membership-form reveal visible" style={{ transform: 'none', opacity: 1 }}>
-                <div className="form-group" style={{ position: 'relative' }}>
-                  {renderMessages()}
+                <div className="form-group">
                   <label htmlFor="otp">Verification Code *</label>
                   <input
                     type="text"
@@ -387,8 +395,7 @@ export default function LoginModal({
                 Enter your registered email address and we'll send you a secure reset link, valid for 15 minutes.
               </p>
               <form onSubmit={handleForgotPassword} className="membership-form reveal visible" style={{ transform: 'none', opacity: 1 }}>
-                <div className="form-group" style={{ position: 'relative' }}>
-                  {renderMessages()}
+                <div className="form-group">
                   <label htmlFor="forgot-email">Email *</label>
                   <input
                     type="email"
@@ -458,8 +465,19 @@ export default function LoginModal({
                 Choose a strong new password for your KBCA account.
               </p>
               <form onSubmit={handleResetPassword} className="membership-form reveal visible" style={{ transform: 'none', opacity: 1 }}>
-                <div className="form-group" style={{ position: 'relative' }}>
-                  {renderMessages()}
+                <div className="form-group">
+                  <label htmlFor="token">Reset Token *</label>
+                  <input
+                    type="text"
+                    id="token"
+                    name="token"
+                    required={!resetToken}
+                    placeholder="Enter token from email"
+                    defaultValue={resetToken}
+                    autoComplete="one-time-code"
+                  />
+                </div>
+                <div className="form-group">
                   <label htmlFor="new_password">New Password *</label>
                   <input
                     type="password"
@@ -491,11 +509,7 @@ export default function LoginModal({
           {/* ── LOGIN / REGISTER ── */}
           {(view === 'login' || view === 'register') && (
             <>
-              <div className="section-label" style={{ justifyContent: 'center', marginBottom: '24px' }}>
-                <span style={{ width: '40px', height: '1px', background: 'var(--gold-dim)' }} />
-                {view === 'login' ? 'প্রবেশ · Login' : 'নিবন্ধন · Register'}
-                <span style={{ width: '40px', height: '1px', background: 'var(--gold-dim)' }} />
-              </div>
+              <SectionDivider label={view === 'login' ? 'প্রবেশ · Login' : 'নিবন্ধন · Register'} />
 
               <h2 className={`reveal ${isVisible[0] || bypassReveal ? 'visible' : ''}`} ref={refs[0]} style={bypassReveal ? { transform: 'none', opacity: 1 } : undefined}>
                 {view === 'login' ? <><>Welcome</><br /><em>Back.</em></> : <><>Join Our</><br /><em>Family.</em></>}
@@ -538,8 +552,7 @@ export default function LoginModal({
                   </>
                 )}
 
-                <div className="form-group" style={{ position: 'relative' }}>
-                  {renderMessages()}
+                <div className="form-group">
                   <label htmlFor="email">Email *</label>
                   <input type="email" id="email" name="email" required placeholder="your@email.com" />
                 </div>
