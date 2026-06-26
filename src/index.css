@@ -1863,6 +1863,65 @@ footer {
   margin-bottom: 0 !important;
   font-style: italic;
 }
+.meetup-checkout-container {
+  width: 100%;
+  min-height: 640px;
+  height: 100%;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(10, 10, 10, 0.95);
+}
+
+.meetup-payment-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: rgba(0, 0, 0, 0.72);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.meetup-payment-overlay.open {
+  display: flex;
+}
+
+.meetup-payment-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(980px, 100%);
+  max-height: min(90vh, 860px);
+  height: min(90vh, 860px);
+  background: rgba(10, 10, 10, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 26px;
+  box-shadow: 0 38px 90px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.meetup-payment-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--cream);
+  font-size: 1.4rem;
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 999px;
+}
+
+.meetup-payment-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
 
 /* Success state */
 .meetup-success {

@@ -1,4 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+
+declare global {
+  interface Window {
+    Cashfree?: (options: { mode: 'sandbox' | 'production' }) => any;
+  }
+}
+
+const CASHFREE_SDK_SRC = 'https://sdk.cashfree.com/js/v3/cashfree.js';
+const CASHFREE_BACKEND_ORDER_URL = '/cashfree/orders';
+
+const loadCashfreeSdk = (): Promise<void> => {
+  if (window.Cashfree) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>('script[data-cashfree-sdk]');
+    if (existing) {
+      existing.addEventListener('load', () => resolve());
+      existing.addEventListener('error', () => reject(new Error('Cashfree SDK failed to load')));
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = CASHFREE_SDK_SRC;
+    script.async = true;
+    script.dataset.cashfreeSdk = 'true';
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('Cashfree SDK failed to load'));
+    document.body.appendChild(script);
+  });
+};
 
 interface MeetupRegistrationModalProps {
   isOpen: boolean;
@@ -13,6 +45,12 @@ export default function MeetupRegistrationModal({ isOpen, onClose }: MeetupRegis
   const [kidsOlder, setKidsOlder] = useState(0);
   const [kidsUnder, setKidsUnder] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [cashfreeClient, setCashfreeClient] = useState<any>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [pendingPaymentSessionId, setPendingPaymentSessionId] = useState<string | null>(null);
+  const checkoutMountRef = useRef<HTMLDivElement | null>(null);
 
   const total = adults * ADULT_RATE + kidsOlder * CHILD_RATE;
 
@@ -34,27 +72,129 @@ export default function MeetupRegistrationModal({ isOpen, onClose }: MeetupRegis
   }, [isOpen, onClose]);
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [isOpen]);
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification('KBCA Meetup', {
-        body: "Registration will begin soon. We'll notify you when it opens!",
-        icon: '/favicon.ico',
-      });
-    } else if ('Notification' in window && Notification.permission !== 'denied') {
-      Notification.requestPermission().then((perm) => {
-        if (perm === 'granted') {
-          new Notification('KBCA Meetup', {
-            body: "Registration will begin soon. We'll notify you when it opens!",
-          });
-        }
-      });
+    if (isOpen || checkoutOpen) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = originalBodyOverflow;
+      document.documentElement.style.overflow = originalHtmlOverflow;
     }
-    setSubmitted(true);
+
+    return () => {
+      document.body.style.overflow = originalBodyOverflow;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+    };
+  }, [isOpen, checkoutOpen]);
+
+  useEffect(() => {
+    let active = true;
+
+    loadCashfreeSdk()
+      .then(() => {
+        if (!active) return;
+        if (window.Cashfree) {
+          setCashfreeClient(window.Cashfree({ mode: 'sandbox' }));
+        } else {
+          setPaymentError('Cashfree SDK loaded but the client is unavailable.');
+        }
+      })
+      .catch((error) => {
+        if (active) setPaymentError((error as Error).message);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!pendingPaymentSessionId || !cashfreeClient || !checkoutOpen || !checkoutMountRef.current) {
+      return;
+    }
+
+    const paymentSessionId = pendingPaymentSessionId;
+
+    cashfreeClient.checkout({
+      paymentSessionId,
+      redirectTarget: checkoutMountRef.current,
+      appearance: {
+        width: '100%',
+        height: '100%',
+      },
+    }).then((result: any) => {
+      setCheckoutOpen(false);
+      setPendingPaymentSessionId(null);
+
+      if (result.error) {
+        setPaymentError(result.error.message || 'Payment failed in checkout');
+        setIsProcessing(false);
+        return;
+      }
+
+      if (result.paymentDetails) {
+        setSubmitted(true);
+        setIsProcessing(false);
+      }
+    }).catch((error: any) => {
+      setCheckoutOpen(false);
+      setPendingPaymentSessionId(null);
+      setPaymentError(error?.message || 'Payment failed in checkout');
+      setIsProcessing(false);
+    });
+  }, [pendingPaymentSessionId, cashfreeClient, checkoutOpen]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPaymentError('');
+
+    if (!cashfreeClient) {
+      setPaymentError('Payment system is loading. Please try again in a moment.');
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const orderId = `kbca_meetup_${Date.now()}`;
+      const response = await fetch(CASHFREE_BACKEND_ORDER_URL, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          order_amount: Number(total.toFixed(2)),
+          order_currency: 'INR',
+          order_id: orderId,
+          customer_details: {
+            customer_id: orderId,
+            customer_phone: '9999999999',
+          },
+          order_meta: {
+            return_url: window.location.href,
+          },
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data?.message || 'Failed to create payment order');
+      }
+
+      const paymentSessionId = data.payment_session_id ?? data.paymentSessionId;
+      if (!paymentSessionId) {
+        throw new Error('Payment session ID not provided by Cashfree');
+      }
+
+      setCheckoutOpen(true);
+      setPendingPaymentSessionId(paymentSessionId);
+    } catch (error) {
+      setPaymentError((error as Error)?.message || 'Payment failed, please try again.');
+      setIsProcessing(false);
+    }
   };
 
   const CounterField = ({
@@ -209,12 +349,14 @@ export default function MeetupRegistrationModal({ isOpen, onClose }: MeetupRegis
                   <div className="meetup-total-amount">₹{total.toLocaleString('en-IN')}</div>
                 </div>
 
-                <button type="submit" id="meetup-register-submit" className="btn-primary meetup-submit">
-                  Register Now
+                <button type="submit" id="meetup-register-submit" className="btn-primary meetup-submit" disabled={isProcessing || checkoutOpen}>
+                  {isProcessing ? `Opening payment...` : `Pay ₹${total.toLocaleString('en-IN')}`}
                 </button>
 
+                {paymentError && <p className="meetup-error">{paymentError}</p>}
+
                 <p className="meetup-footnote">
-                  Payment details will be shared once registration opens.
+                  Payment will open in a popup overlay. Once completed, the overlay closes and the registration is confirmed.
                 </p>
               </form>
             </>
@@ -235,6 +377,26 @@ export default function MeetupRegistrationModal({ isOpen, onClose }: MeetupRegis
 
         </div>
       </div>
+
+      {checkoutOpen && (
+        <div className="meetup-payment-overlay open">
+          <div className="meetup-payment-modal" role="dialog" aria-modal="true" aria-label="Payment checkout">
+            <button
+              type="button"
+              className="meetup-payment-close"
+              aria-label="Close payment"
+              onClick={() => {
+                setCheckoutOpen(false);
+                setPendingPaymentSessionId(null);
+                setIsProcessing(false);
+              }}
+            >
+              ✕
+            </button>
+            <div className="meetup-checkout-container" ref={checkoutMountRef} />
+          </div>
+        </div>
+      )}
     </>
   );
 }
