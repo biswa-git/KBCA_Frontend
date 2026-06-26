@@ -39,6 +39,16 @@ interface MeetupRegistrationModalProps {
   userEmail: string | null;
 }
 
+interface MeetupRegistrationDetails {
+  adults: number;
+  children_6_12: number;
+  children_under_6: number;
+  amount_paid: number;
+  venue: string;
+  date: string;
+  time: string;
+}
+
 const ADULT_RATE = 250;
 const CHILD_RATE = 150;
 
@@ -47,6 +57,9 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
   const [kidsOlder, setKidsOlder] = useState(0);
   const [kidsUnder, setKidsUnder] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [existingRegistration, setExistingRegistration] = useState<MeetupRegistrationDetails | null>(null);
+  const [isCheckingRegistration, setIsCheckingRegistration] = useState(false);
+  const [registrationCheckError, setRegistrationCheckError] = useState('');
   const [cashfreeClient, setCashfreeClient] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState('');
@@ -63,6 +76,9 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
         setKidsOlder(0);
         setKidsUnder(0);
         setSubmitted(false);
+        setExistingRegistration(null);
+        setRegistrationCheckError('');
+        setIsCheckingRegistration(false);
       }, 500);
     }
   }, [isOpen]);
@@ -92,7 +108,65 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
   }, [isOpen, checkoutOpen]);
 
   useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
     let active = true;
+
+    const checkExistingRegistration = async () => {
+      if (!userEmail) {
+        setExistingRegistration(null);
+        setRegistrationCheckError('');
+        setIsCheckingRegistration(false);
+        return;
+      }
+
+      setIsCheckingRegistration(true);
+      setRegistrationCheckError('');
+
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        const response = await apiFetch(`${apiUrl}/me`);
+
+        if (!active) return;
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            setExistingRegistration(null);
+            return;
+          }
+          throw new Error('Unable to verify your registration right now.');
+        }
+
+        const data = await response.json();
+        if (!active) return;
+
+        if (data.registration_status) {
+          setExistingRegistration({
+            adults: Number(data.registered_adults || 0),
+            children_6_12: Number(data.registered_children_6_12 || 0),
+            children_under_6: Number(data.registered_children_under_6 || 0),
+            amount_paid: Number(data.amount_paid || 0),
+            venue: 'Axon Business Hotel',
+            date: '19th July 2026',
+            time: '6:00 PM Onwards',
+          });
+        } else {
+          setExistingRegistration(null);
+        }
+      } catch (error) {
+        if (!active) return;
+        setExistingRegistration(null);
+        setRegistrationCheckError((error as Error)?.message || 'Unable to verify your registration right now.');
+      } finally {
+        if (active) {
+          setIsCheckingRegistration(false);
+        }
+      }
+    };
+
+    checkExistingRegistration();
 
     loadCashfreeSdk()
       .then(() => {
@@ -110,7 +184,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
     return () => {
       active = false;
     };
-  }, []);
+  }, [isOpen, userEmail]);
 
   useEffect(() => {
     if (!pendingPaymentSessionId || !cashfreeClient || !checkoutOpen || !checkoutMountRef.current) {
@@ -309,7 +383,47 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
 
         <div className="meetup-page">
 
-          {!submitted ? (
+          {isCheckingRegistration ? (
+            <div className="meetup-success">
+              <div className="meetup-success-icon">🔎</div>
+              <div className="meetup-eyebrow" style={{ justifyContent: 'center' }}>Checking registration</div>
+              <h2 className="meetup-success-title">Looking up your Muhurat booking…</h2>
+              <p className="meetup-success-desc">
+                We’re confirming whether you already have a registration on record.
+              </p>
+            </div>
+          ) : existingRegistration ? (
+            <div className="meetup-success">
+              <div className="meetup-success-icon">✅</div>
+              <div className="meetup-eyebrow" style={{ justifyContent: 'center' }}>Already registered</div>
+              <h2 className="meetup-success-title">You’re already on the <em>list!</em></h2>
+              <p className="meetup-success-desc">
+                We found your Muhurat registration. Here are the details we have on file.
+              </p>
+
+              <div style={{ marginTop: '24px', width: '100%', padding: '18px 20px', borderRadius: '16px', border: '1px solid rgba(255, 215, 130, 0.18)', background: 'rgba(250, 247, 242, 0.03)' }}>
+                <div style={{ fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gold-dim)', marginBottom: '12px' }}>
+                  Registration details
+                </div>
+                <div style={{ display: 'grid', gap: '10px', textAlign: 'left', color: 'var(--cream)' }}>
+                  <div><strong>Venue:</strong> {existingRegistration.venue}</div>
+                  <div><strong>Date:</strong> {existingRegistration.date}</div>
+                  <div><strong>Time:</strong> {existingRegistration.time}</div>
+                  <div><strong>Total persons:</strong> {existingRegistration.adults + existingRegistration.children_6_12 + existingRegistration.children_under_6}</div>
+                  <div><strong>Adults:</strong> {existingRegistration.adults}</div>
+                  <div><strong>Children (6–12):</strong> {existingRegistration.children_6_12}</div>
+                  <div><strong>Children (Under 6):</strong> {existingRegistration.children_under_6}</div>
+                  <div><strong>Amount paid:</strong> ₹{existingRegistration.amount_paid.toLocaleString('en-IN')}</div>
+                </div>
+              </div>
+
+              {registrationCheckError && <p className="meetup-error" style={{ marginTop: '16px' }}>{registrationCheckError}</p>}
+
+              <button className="btn-ghost" onClick={onClose} style={{ fontSize: '0.82rem', padding: '12px 40px', marginTop: '24px' }}>
+                Close
+              </button>
+            </div>
+          ) : !submitted ? (
             <>
               {/* ── Header ── */}
               <div className="meetup-header">
