@@ -3,9 +3,10 @@ import useScrollReveal from '../hooks/useScrollReveal';
 interface EventsProps {
   isLoggedIn?: boolean;
   onOpenMembership?: () => void;
+  onOpenMeetup?: () => void;
 }
 
-export default function Events({ isLoggedIn, onOpenMembership }: EventsProps) {
+export default function Events({ isLoggedIn, onOpenMembership, onOpenMeetup }: EventsProps) {
   const { refs, isVisible } = useScrollReveal(3);
 
   return (
@@ -39,7 +40,7 @@ export default function Events({ isLoggedIn, onOpenMembership }: EventsProps) {
                 onClick={(e) => {
                   e.preventDefault();
                   if (isLoggedIn) {
-                    alert('Registration for Muhurat (Khuti Puja) will begin soon. Stay tuned!');
+                    onOpenMeetup?.();
                   } else if (onOpenMembership) {
                     onOpenMembership();
                   }

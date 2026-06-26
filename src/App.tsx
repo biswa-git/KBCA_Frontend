@@ -9,11 +9,13 @@ import JoinCTA from './components/JoinCTA';
 import Footer from './components/Footer';
 import LoginModal from './components/LoginModal';
 import UserProfileModal from './components/UserProfileModal';
+import MeetupRegistrationModal from './components/MeetupRegistrationModal';
 import { apiFetch } from './api';
 
 function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showMeetupModal, setShowMeetupModal] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
 
@@ -90,7 +92,11 @@ function App() {
       <div className="app-main">
         <Hero />
         <About />
-        <Events isLoggedIn={isLoggedIn} onOpenMembership={() => setShowLoginModal(true)} />
+        <Events
+          isLoggedIn={isLoggedIn}
+          onOpenMembership={() => setShowLoginModal(true)}
+          onOpenMeetup={() => setShowMeetupModal(true)}
+        />
         <Programs />
         <JoinCTA isLoggedIn={isLoggedIn} onOpenMembership={() => setShowLoginModal(true)} onOpenProfile={() => setShowProfileModal(true)} />
         <Footer isLoggedIn={isLoggedIn} onOpenMembership={() => setShowLoginModal(true)} onOpenProfile={() => setShowProfileModal(true)} />
@@ -106,6 +112,11 @@ function App() {
         isOpen={showProfileModal}
         onClose={() => setShowProfileModal(false)}
         onLogout={handleLogout}
+      />
+
+      <MeetupRegistrationModal
+        isOpen={showMeetupModal}
+        onClose={() => setShowMeetupModal(false)}
       />
     </div>
   );
