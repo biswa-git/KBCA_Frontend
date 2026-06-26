@@ -58,6 +58,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
   const [kidsUnder, setKidsUnder] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [existingRegistration, setExistingRegistration] = useState<MeetupRegistrationDetails | null>(null);
+  const [successfulRegistration, setSuccessfulRegistration] = useState<MeetupRegistrationDetails | null>(null);
   const [isCheckingRegistration, setIsCheckingRegistration] = useState(false);
   const [registrationCheckError, setRegistrationCheckError] = useState('');
   const [cashfreeClient, setCashfreeClient] = useState<any>(null);
@@ -77,6 +78,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
         setKidsUnder(0);
         setSubmitted(false);
         setExistingRegistration(null);
+        setSuccessfulRegistration(null);
         setRegistrationCheckError('');
         setIsCheckingRegistration(false);
       }, 500);
@@ -236,6 +238,15 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
           throw new Error(errorText || 'Failed to record registration after payment');
         }
 
+        setSuccessfulRegistration({
+          adults,
+          children_6_12: kidsOlder,
+          children_under_6: kidsUnder,
+          amount_paid: total,
+          venue: 'Axon Business Hotel',
+          date: '19th July 2026',
+          time: '6:00 PM Onwards',
+        });
         setSubmitted(true);
         setIsProcessing(false);
       }
@@ -522,9 +533,28 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
               <div className="meetup-eyebrow" style={{ justifyContent: 'center' }}>সফল · Success</div>
               <h2 className="meetup-success-title">You're on the <em>List!</em></h2>
               <p className="meetup-success-desc">
-                Registration will begin soon. We'll notify you when it opens — keep an eye on your inbox and our announcements!
+                Your Muhurat registration has been confirmed. Here are the details we have on file.
               </p>
-              <button className="btn-ghost" onClick={onClose} style={{ fontSize: '0.82rem', padding: '12px 40px' }}>
+
+              {successfulRegistration && (
+                <div style={{ marginTop: '24px', width: '100%', padding: '18px 20px', borderRadius: '16px', border: '1px solid rgba(255, 215, 130, 0.18)', background: 'rgba(250, 247, 242, 0.03)' }}>
+                  <div style={{ fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gold-dim)', marginBottom: '12px' }}>
+                    Registration details
+                  </div>
+                  <div style={{ display: 'grid', gap: '10px', textAlign: 'left', color: 'var(--cream)' }}>
+                    <div><strong>Venue:</strong> {successfulRegistration.venue}</div>
+                    <div><strong>Date:</strong> {successfulRegistration.date}</div>
+                    <div><strong>Time:</strong> {successfulRegistration.time}</div>
+                    <div><strong>Total persons:</strong> {successfulRegistration.adults + successfulRegistration.children_6_12 + successfulRegistration.children_under_6}</div>
+                    <div><strong>Adults:</strong> {successfulRegistration.adults}</div>
+                    <div><strong>Children (6–12):</strong> {successfulRegistration.children_6_12}</div>
+                    <div><strong>Children (Under 6):</strong> {successfulRegistration.children_under_6}</div>
+                    <div><strong>Amount paid:</strong> ₹{successfulRegistration.amount_paid.toLocaleString('en-IN')}</div>
+                  </div>
+                </div>
+              )}
+
+              <button className="btn-ghost" onClick={onClose} style={{ fontSize: '0.82rem', padding: '12px 40px', marginTop: '24px' }}>
                 Back to Events
               </button>
             </div>
