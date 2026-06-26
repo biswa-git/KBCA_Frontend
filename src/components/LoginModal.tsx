@@ -74,9 +74,14 @@ export default function LoginModal({
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Tracks whether we just completed a password reset so the login view
+  // can bypass scroll-reveal animations (which won't re-fire for already-mounted elements).
+  const [postReset, setPostReset] = useState(false);
+
   // If the modal was opened with a reset token, the login/register elements
   // aren't mounted initially, so useScrollReveal won't observe them. We bypass the animation.
-  const bypassReveal = !!resetToken;
+  // Also bypass when transitioning back to login after a successful reset.
+  const bypassReveal = !!resetToken || postReset;
 
   // When the modal opens with a reset token, jump straight to the reset view
   useEffect(() => {
@@ -87,12 +92,13 @@ export default function LoginModal({
     }
   }, [isOpen, resetToken]);
 
-  // When modal opens fresh (no reset token), start at the initialView
+  // When modal opens fresh (no reset token), start at the initialView and clear postReset
   useEffect(() => {
     if (isOpen && !resetToken) {
       setView(initialView);
       setError(null);
       setSuccess(null);
+      setPostReset(false);
     }
   }, [isOpen, initialView]);
 
@@ -264,6 +270,7 @@ export default function LoginModal({
       setSuccess('Password updated! Redirecting to login…');
       setTimeout(() => {
         window.history.replaceState({}, document.title, window.location.pathname);
+        setPostReset(true); // ensure login form bypasses scroll-reveal
         setView('login');
       }, 2000);
     } catch (err: any) {
