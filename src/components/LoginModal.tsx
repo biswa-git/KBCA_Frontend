@@ -73,6 +73,10 @@ export default function LoginModal({
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // If the modal was opened with a reset token, the login/register elements
+  // aren't mounted initially, so useScrollReveal won't observe them. We bypass the animation.
+  const bypassReveal = !!resetToken;
+
   // When the modal opens with a reset token, jump straight to the reset view
   useEffect(() => {
     if (isOpen && resetToken) {
@@ -463,11 +467,11 @@ export default function LoginModal({
                 <span style={{ width: '40px', height: '1px', background: 'var(--gold-dim)' }} />
               </div>
 
-              <h2 className={`reveal ${isVisible[0] ? 'visible' : ''}`} ref={refs[0]}>
+              <h2 className={`reveal ${isVisible[0] || bypassReveal ? 'visible' : ''}`} ref={refs[0]} style={bypassReveal ? { transform: 'none', opacity: 1 } : undefined}>
                 {view === 'login' ? <><>Welcome</><br /><em>Back.</em></> : <><>Join Our</><br /><em>Family.</em></>}
               </h2>
 
-              <p className={`reveal reveal-delay-1 ${isVisible[1] ? 'visible' : ''}`} ref={refs[1]}>
+              <p className={`reveal reveal-delay-1 ${isVisible[1] || bypassReveal ? 'visible' : ''}`} ref={refs[1]} style={bypassReveal ? { transform: 'none', opacity: 1 } : undefined}>
                 {view === 'login'
                   ? 'Please log in to access your KBCA account.'
                   : 'Create an account to become a member of KBCA.'}
@@ -475,8 +479,9 @@ export default function LoginModal({
 
               <form
                 onSubmit={view === 'login' ? handleLogin : handleRegister}
-                className={`membership-form reveal reveal-delay-2 ${isVisible[2] ? 'visible' : ''}`}
+                className={`membership-form reveal reveal-delay-2 ${isVisible[2] || bypassReveal ? 'visible' : ''}`}
                 ref={refs[2] as any}
+                style={bypassReveal ? { transform: 'none', opacity: 1 } : undefined}
               >
                 {view === 'register' && (
                   <>
@@ -528,9 +533,9 @@ export default function LoginModal({
               </form>
 
               <div
-                className={`form-note reveal reveal-delay-3 ${isVisible[3] ? 'visible' : ''}`}
+                className={`form-note reveal reveal-delay-3 ${isVisible[3] || bypassReveal ? 'visible' : ''}`}
                 ref={refs[3]}
-                style={{ marginTop: '24px', textAlign: 'center' }}
+                style={{ marginTop: '24px', textAlign: 'center', ...(bypassReveal ? { transform: 'none', opacity: 1 } : {}) }}
               >
                 <LinkButton onClick={() => { setView(view === 'login' ? 'register' : 'login'); clearMessages(); }}>
                   {view === 'login'
