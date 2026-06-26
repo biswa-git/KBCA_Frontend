@@ -24,13 +24,20 @@ html {
   scroll-padding-top: 80px;
 }
 
+body, body * {
+  cursor: auto;
+}
+
 body {
   background: var(--ink);
   color: var(--cream);
   font-family: 'DM Sans', sans-serif;
   font-weight: 300;
   overflow-x: hidden;
-  cursor: none;
+}
+
+a, button, input, select, textarea, [role="button"], .nav-cta, .btn-primary, .btn-ghost, .social-icon, .close-btn {
+  cursor: pointer;
 }
 
 /* Custom Scrollbar */
@@ -51,32 +58,6 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--gold-dim);
-}
-
-/* Custom cursor */
-.cursor {
-  position: fixed;
-  width: 10px;
-  height: 10px;
-  background: var(--gold);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition: transform 0.1s, width 0.3s, height 0.3s, opacity 0.3s;
-  mix-blend-mode: difference;
-}
-
-.cursor-ring {
-  position: fixed;
-  width: 36px;
-  height: 36px;
-  border: 1px solid rgba(201, 168, 76, 0.5);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9998;
-  transform: translate(-50%, -50%);
-  transition: transform 0.12s ease, width 0.3s, height 0.3s;
 }
 
 /* Nav */
@@ -147,7 +128,7 @@ nav.scrolled {
   font-size: 0.78rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  cursor: none;
+  cursor: pointer;
   transition: all 0.3s;
   font-family: 'DM Sans', sans-serif;
 }
@@ -270,7 +251,7 @@ nav.scrolled {
   font-size: 0.82rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  cursor: none;
+  cursor: pointer;
   border: none;
   font-family: 'DM Sans', sans-serif;
   font-weight: 500;
@@ -291,7 +272,7 @@ nav.scrolled {
   font-size: 0.82rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  cursor: none;
+  cursor: pointer;
   background: transparent;
   font-family: 'DM Sans', sans-serif;
   font-weight: 300;
@@ -478,7 +459,7 @@ section {
   border: 1px solid var(--border);
   overflow: hidden;
   transition: border-color 0.5s;
-  cursor: none;
+  cursor: default;
 }
 
 .luminary-card:hover {
@@ -596,7 +577,7 @@ section {
   position: relative;
   overflow: hidden;
   transition: border-color 0.4s, transform 0.4s;
-  cursor: none;
+  cursor: default;
 }
 
 .event-card:hover {
@@ -755,7 +736,7 @@ section {
   padding: 40px 32px;
   border: 1px solid var(--border);
   transition: all 0.4s;
-  cursor: none;
+  cursor: default;
 }
 
 .program-item:hover {
@@ -875,7 +856,7 @@ footer {
   font-size: 0.82rem;
   letter-spacing: 0.04em;
   transition: color 0.3s;
-  cursor: none;
+  cursor: pointer;
 }
 
 .social-icon:hover {

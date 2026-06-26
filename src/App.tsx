@@ -1,6 +1,5 @@
 import { useCallback, useState, useEffect } from 'react';
 import Navigation from './components/Navigation';
-import CustomCursor from './components/CustomCursor';
 import Hero from './components/Hero';
 import About from './components/About';
 import Events from './components/Events';
@@ -81,7 +80,6 @@ function App() {
 
   return (
     <div className={`app-wrapper ${showLoginModal || showProfileModal ? 'member-panel-open' : ''}`}>
-      <CustomCursor />
       <Navigation
         isLoggedIn={isLoggedIn}
         userName={userName}
