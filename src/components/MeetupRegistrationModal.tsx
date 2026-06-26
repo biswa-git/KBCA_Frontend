@@ -69,6 +69,9 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
   const checkoutMountRef = useRef<HTMLDivElement | null>(null);
 
   const total = adults * ADULT_RATE + kidsOlder * CHILD_RATE;
+  const successfulRegistrationSummary = successfulRegistration
+    ? `${successfulRegistration.venue} · ${successfulRegistration.date} · ${successfulRegistration.adults + successfulRegistration.children_6_12 + successfulRegistration.children_under_6} persons · ₹${successfulRegistration.amount_paid.toLocaleString('en-IN')}`
+    : null;
 
   useEffect(() => {
     if (!isOpen) {
@@ -533,7 +536,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
               <div className="meetup-eyebrow" style={{ justifyContent: 'center' }}>সফল · Success</div>
               <h2 className="meetup-success-title">You're on the <em>List!</em></h2>
               <p className="meetup-success-desc">
-                Your Muhurat registration has been confirmed. Here are the details we have on file.
+                {successfulRegistrationSummary || 'Your Muhurat registration has been confirmed.'}
               </p>
 
               {successfulRegistration && (
