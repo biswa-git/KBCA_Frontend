@@ -103,7 +103,7 @@ export default function LoginModal({
   useEffect(() => {
     if (error === 'Email not verified. Please register to get an OTP.') return;
 
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setTimeout>;
     if (error || success) {
       timer = setTimeout(() => {
         clearMessages();
@@ -133,6 +133,7 @@ export default function LoginModal({
       }
       const data = await response.json();
       localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
       setSuccess('Successfully logged in!');
       setTimeout(() => onClose(), 1500);
     } catch (err: any) {
@@ -193,6 +194,7 @@ export default function LoginModal({
       }
       const data = await response.json();
       localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
       setSuccess('Verification successful! Logging you in…');
       setTimeout(() => { setView('login'); onClose(); }, 1500);
     } catch (err: any) {

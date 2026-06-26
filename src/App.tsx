@@ -9,6 +9,7 @@ import JoinCTA from './components/JoinCTA';
 import Footer from './components/Footer';
 import LoginModal from './components/LoginModal';
 import UserProfileModal from './components/UserProfileModal';
+import { apiFetch } from './api';
 
 function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -35,9 +36,7 @@ function App() {
 
     if (token) {
       const apiUrl = import.meta.env.VITE_API_URL;
-      fetch(`${apiUrl}/me`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
+      apiFetch(`${apiUrl}/me`)
         .then(res => {
           if (res.ok) return res.json();
           throw new Error('Failed to fetch user');
@@ -53,10 +52,17 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     setIsLoggedIn(false);
     setShowProfileModal(false);
     window.location.reload();
   };
+
+  useEffect(() => {
+    const handleAuthExpired = () => handleLogout();
+    window.addEventListener('auth-expired', handleAuthExpired);
+    return () => window.removeEventListener('auth-expired', handleAuthExpired);
+  }, []);
 
   const handleCloseLoginModal = () => {
     setShowLoginModal(false);

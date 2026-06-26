@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { apiFetch } from '../api';
 
 interface UserProfileModalProps {
   isOpen: boolean;
@@ -32,19 +33,9 @@ export default function UserProfileModal({ isOpen, onClose, onLogout }: UserProf
     if (isOpen) {
       setLoading(true);
       setError('');
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        setError('No access token found. Please log in again.');
-        setLoading(false);
-        return;
-      }
 
       const apiUrl = import.meta.env.VITE_API_URL;
-      fetch(`${apiUrl}/me`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      apiFetch(`${apiUrl}/me`)
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch profile data');
         return res.json();
