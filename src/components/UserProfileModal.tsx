@@ -34,8 +34,7 @@ export default function UserProfileModal({ isOpen, onClose, onLogout }: UserProf
       setLoading(true);
       setError('');
 
-      const apiUrl = import.meta.env.VITE_API_URL;
-      apiFetch(`${apiUrl}/me`)
+      apiFetch('/me')
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch profile data');
         return res.json();

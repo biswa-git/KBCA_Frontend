@@ -153,8 +153,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
       setRegistrationCheckError('');
 
       try {
-        const apiUrl = import.meta.env.VITE_API_URL;
-        const response = await apiFetch(`${apiUrl}/me`);
+        const response = await apiFetch('/me');
 
         if (!active) return;
 
@@ -246,8 +245,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
           return;
         }
 
-        const apiUrl = import.meta.env.VITE_API_URL;
-        const registrationResponse = await apiFetch(`${apiUrl}/meetup-registration`, {
+        const registrationResponse = await apiFetch('/meetup-registration', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -305,8 +303,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
         throw new Error('Please log in before making a payment.');
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await apiFetch(`${apiUrl}/cashfree-orders`, {
+      const response = await apiFetch('/cashfree-orders', {
         method: 'POST',
         headers: {
           Accept: 'application/json',

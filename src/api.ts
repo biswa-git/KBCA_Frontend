@@ -1,4 +1,13 @@
-const apiUrl = import.meta.env.VITE_API_URL;
+const getApiBaseUrl = () => import.meta.env.VITE_API_URL?.trim() || '';
+
+const resolveApiUrl = (url: string) => {
+  if (/^https?:\/\//.test(url) || url.startsWith('/')) {
+    return url;
+  }
+
+  const baseUrl = getApiBaseUrl();
+  return baseUrl ? `${baseUrl}/${url.replace(/^\//, '')}` : `/${url.replace(/^\//, '')}`;
+};
 
 let refreshPromise: Promise<string> | null = null;
 
@@ -16,7 +25,7 @@ const withAuthHeader = (options: RequestInit, token: string): RequestInit => {
 
 const refreshAccessToken = (refreshToken: string): Promise<string> => {
   if (!refreshPromise) {
-    refreshPromise = fetch(`${apiUrl}/refresh`, {
+    refreshPromise = fetch(resolveApiUrl('/refresh'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh_token: refreshToken }),
@@ -46,7 +55,7 @@ const refreshAccessToken = (refreshToken: string): Promise<string> => {
 export const apiFetch = async (url: string, options: RequestInit = {}): Promise<Response> => {
   const token = localStorage.getItem('access_token');
   const authenticatedOptions = token ? withAuthHeader(options, token) : options;
-  const response = await fetch(url, authenticatedOptions);
+  const response = await fetch(resolveApiUrl(url), authenticatedOptions);
 
   if (response.status !== 401) {
     return response;
@@ -59,5 +68,5 @@ export const apiFetch = async (url: string, options: RequestInit = {}): Promise<
   }
 
   const newToken = await refreshAccessToken(refreshToken);
-  return fetch(url, withAuthHeader(options, newToken));
+  return fetch(resolveApiUrl(url), withAuthHeader(options, newToken));
 };
