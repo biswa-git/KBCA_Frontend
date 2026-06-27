@@ -8,7 +8,7 @@ declare global {
 }
 
 const CASHFREE_SDK_SRC = 'https://sdk.cashfree.com/js/v3/cashfree.js';
-const CASHFREE_BACKEND_ORDER_URL = '/api/cashfree-orders';
+// We will use import.meta.env.VITE_API_URL for the backend URL directly in the function
 
 const loadCashfreeSdk = (): Promise<void> => {
   if (window.Cashfree) {
@@ -298,7 +298,8 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
         throw new Error('Please log in before making a payment.');
       }
 
-      const response = await fetch(CASHFREE_BACKEND_ORDER_URL, {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${apiUrl}/cashfree-orders`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
