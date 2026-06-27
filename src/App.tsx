@@ -1,4 +1,6 @@
 import { useCallback, useState, useEffect } from 'react';
+
+const REGISTRATION_STATE_KEY = 'kbca_has_muhurat_registration';
 import Navigation from './components/Navigation';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -18,7 +20,12 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [hasMuhuratRegistration, setHasMuhuratRegistration] = useState(false);
+  const [hasMuhuratRegistration, setHasMuhuratRegistration] = useState(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    return localStorage.getItem(REGISTRATION_STATE_KEY) === 'true';
+  });
 
   // Password-reset token extracted from the URL (?token=...)
   const [resetToken, setResetToken] = useState('');
@@ -38,6 +45,11 @@ function App() {
     }
   }, []);
 
+  const syncRegistrationState = useCallback((registered: boolean) => {
+    setHasMuhuratRegistration(registered);
+    localStorage.setItem(REGISTRATION_STATE_KEY, registered ? 'true' : 'false');
+  }, []);
+
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     setIsLoggedIn(!!token);
@@ -51,22 +63,22 @@ function App() {
         .then(data => {
           if (data.full_name) setUserName(data.full_name);
           if (data.email) setUserEmail(data.email);
-          setHasMuhuratRegistration(Boolean(data.registration_status));
+          syncRegistrationState(Boolean(data.registration_status));
         })
         .catch(err => console.error(err));
     } else {
       setUserName(null);
       setUserEmail(null);
-      setHasMuhuratRegistration(false);
+      syncRegistrationState(false);
     }
-  }, [showLoginModal, showProfileModal]);
+  }, [showLoginModal, showProfileModal, syncRegistrationState]);
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     setIsLoggedIn(false);
     setUserName(null);
-    setHasMuhuratRegistration(false);
+    syncRegistrationState(false);
     setShowProfileModal(false);
     setShowLoginModal(false);
     setResetToken(''); // clear any stale reset token so re-opening login shows the login view
@@ -123,7 +135,7 @@ function App() {
         isOpen={showMeetupModal}
         onClose={() => setShowMeetupModal(false)}
         userEmail={userEmail}
-        onRegistrationChange={setHasMuhuratRegistration}
+        onRegistrationChange={syncRegistrationState}
       />
     </div>
   );

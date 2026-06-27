@@ -96,6 +96,12 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
     : null;
 
   useEffect(() => {
+    if (successfulRegistration) {
+      onRegistrationChange?.(true);
+    }
+  }, [successfulRegistration, onRegistrationChange]);
+
+  useEffect(() => {
     if (!isOpen) {
       setTimeout(() => {
         setAdults(1);
