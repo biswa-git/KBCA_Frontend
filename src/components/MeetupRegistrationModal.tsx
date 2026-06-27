@@ -8,7 +8,7 @@ declare global {
 }
 
 const CASHFREE_SDK_SRC = 'https://sdk.cashfree.com/js/v3/cashfree.js';
-const CASHFREE_BACKEND_ORDER_URL = '/cashfree/orders';
+const CASHFREE_BACKEND_ORDER_URL = '/api/cashfree-orders';
 
 const loadCashfreeSdk = (): Promise<void> => {
   if (window.Cashfree) {
