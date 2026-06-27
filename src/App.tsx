@@ -60,7 +60,7 @@ function App() {
       setUserEmail(null);
       setHasMuhuratRegistration(false);
     }
-  }, [showLoginModal, showProfileModal, showMeetupModal]);
+  }, [showLoginModal, showProfileModal]);
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem('access_token');
