@@ -222,6 +222,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
           return;
         }
 
+        const cashfreeTransactionId = result.paymentDetails.transactionId || result.paymentDetails.orderId;
         const apiUrl = import.meta.env.VITE_API_URL;
         const registrationResponse = await apiFetch(`${apiUrl}/meetup-registration`, {
           method: 'POST',
@@ -233,6 +234,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
             children_6_12: kidsOlder,
             children_under_6: kidsUnder,
             amount_paid: total,
+            cashfree_transaction_id: cashfreeTransactionId,
           }),
         });
 
