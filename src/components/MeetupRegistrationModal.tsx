@@ -86,6 +86,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
   const [paymentError, setPaymentError] = useState('');
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [pendingPaymentSessionId, setPendingPaymentSessionId] = useState<string | null>(null);
+  const [pendingCashfreeTransactionId, setPendingCashfreeTransactionId] = useState<string | null>(null);
   const checkoutMountRef = useRef<HTMLDivElement | null>(null);
 
   const total = adults * ADULT_RATE + kidsOlder * CHILD_RATE;
@@ -104,6 +105,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
         setSuccessfulRegistration(null);
         setRegistrationCheckError('');
         setIsCheckingRegistration(false);
+        setPendingCashfreeTransactionId(null);
       }, 500);
     }
   }, [isOpen]);
@@ -226,8 +228,10 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
         height: '100%',
       },
     }).then(async (result: any) => {
+      const transactionIdForRegistration = pendingCashfreeTransactionId;
       setCheckoutOpen(false);
       setPendingPaymentSessionId(null);
+      setPendingCashfreeTransactionId(null);
 
       if (result.error) {
         setPaymentError(result.error.message || 'Payment failed in checkout');
@@ -253,6 +257,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
             children_6_12: kidsOlder,
             children_under_6: kidsUnder,
             amount_paid: total,
+            cashfree_transaction_id: transactionIdForRegistration,
           }),
         });
 
@@ -276,10 +281,11 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
     }).catch((error: any) => {
       setCheckoutOpen(false);
       setPendingPaymentSessionId(null);
+      setPendingCashfreeTransactionId(null);
       setPaymentError(error?.message || 'Payment failed in checkout');
       setIsProcessing(false);
     });
-  }, [pendingPaymentSessionId, cashfreeClient, checkoutOpen]);
+  }, [pendingPaymentSessionId, pendingCashfreeTransactionId, cashfreeClient, checkoutOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -291,6 +297,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
     }
 
     setIsProcessing(true);
+    setPendingCashfreeTransactionId(null);
 
     try {
       const orderId = `kbca_meetup_${Date.now()}`;
@@ -299,7 +306,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
       }
 
       const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await fetch(`${apiUrl}/cashfree-orders`, {
+      const response = await apiFetch(`${apiUrl}/cashfree-orders`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -339,6 +346,8 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
         throw new Error('Payment session ID not provided by Cashfree');
       }
 
+      const transactionId = data.cf_order_id ?? data.order_id ?? null;
+      setPendingCashfreeTransactionId(transactionId);
       setCheckoutOpen(true);
       setPendingPaymentSessionId(paymentSessionId);
     } catch (error) {
