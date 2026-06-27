@@ -222,7 +222,19 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
           return;
         }
 
-        const cashfreeTransactionId = result.paymentDetails.transactionId || result.paymentDetails.orderId;
+        // Log payment details for debugging
+        console.log('Cashfree Payment Details:', result.paymentDetails);
+        
+        // Extract transaction ID from various possible fields in Cashfree response
+        const cashfreeTransactionId = 
+          result.paymentDetails.cf_payment_id || 
+          result.paymentDetails.transactionId || 
+          result.paymentDetails.payment_id || 
+          result.paymentDetails.orderId ||
+          JSON.stringify(result.paymentDetails);
+        
+        console.log('Extracted Transaction ID:', cashfreeTransactionId);
+        
         const apiUrl = import.meta.env.VITE_API_URL;
         const registrationResponse = await apiFetch(`${apiUrl}/meetup-registration`, {
           method: 'POST',
