@@ -37,6 +37,7 @@ interface MeetupRegistrationModalProps {
   isOpen: boolean;
   onClose: () => void;
   userEmail: string | null;
+  onRegistrationChange?: (registered: boolean) => void;
 }
 
 interface MeetupRegistrationDetails {
@@ -72,7 +73,7 @@ function RegistrationDetails({ registration }: { registration: MeetupRegistratio
   );
 }
 
-export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: MeetupRegistrationModalProps) {
+export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, onRegistrationChange }: MeetupRegistrationModalProps) {
   const [adults, setAdults] = useState(1);
   const [kidsOlder, setKidsOlder] = useState(0);
   const [kidsUnder, setKidsUnder] = useState(0);
@@ -169,6 +170,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
         if (!active) return;
 
         if (data.registration_status) {
+          onRegistrationChange?.(true);
           setExistingRegistration({
             adults: Number(data.registered_adults || 0),
             children_6_12: Number(data.registered_children_6_12 || 0),
@@ -179,6 +181,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
             time: '6:00 PM Onwards',
           });
         } else {
+          onRegistrationChange?.(false);
           setExistingRegistration(null);
         }
       } catch (error) {
@@ -264,6 +267,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
           throw new Error(errorText || 'Failed to record registration after payment');
         }
 
+        onRegistrationChange?.(true);
         setSuccessfulRegistration({
           adults,
           children_6_12: kidsOlder,

@@ -123,6 +123,7 @@ function App() {
         isOpen={showMeetupModal}
         onClose={() => setShowMeetupModal(false)}
         userEmail={userEmail}
+        onRegistrationChange={setHasMuhuratRegistration}
       />
     </div>
   );
