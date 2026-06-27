@@ -1,12 +1,38 @@
-const getApiBaseUrl = () => import.meta.env.VITE_API_URL?.trim() || '';
+const getApiBaseUrl = () => import.meta.env.VITE_API_URL?.trim().replace(/\/$/, '') || '';
 
 const resolveApiUrl = (url: string) => {
-  if (/^https?:\/\//.test(url) || url.startsWith('/')) {
+  if (!url) {
+    return getApiBaseUrl();
+  }
+
+  if (/^https?:\/\//.test(url)) {
     return url;
   }
 
+  if (url.startsWith('/')) {
+    return `${getApiBaseUrl()}${url}`;
+  }
+
   const baseUrl = getApiBaseUrl();
-  return baseUrl ? `${baseUrl}/${url.replace(/^\//, '')}` : `/${url.replace(/^\//, '')}`;
+  return baseUrl ? `${baseUrl}/${url}` : `/${url}`;
+};
+
+const parseJsonResponse = async (response: Response) => {
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    return response.json();
+  }
+
+  const text = await response.text();
+  if (!text) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { message: text };
+  }
 };
 
 let refreshPromise: Promise<string> | null = null;
@@ -35,7 +61,10 @@ const refreshAccessToken = (refreshToken: string): Promise<string> => {
           throw new Error('Refresh failed');
         }
 
-        const data = await refreshRes.json();
+        const data = await parseJsonResponse(refreshRes);
+        if (!data?.access_token) {
+          throw new Error('Unable to refresh session');
+        }
         localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('refresh_token', data.refresh_token);
         return data.access_token as string;

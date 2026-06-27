@@ -123,7 +123,7 @@ export default function LoginModal({
     }
   }, [isOpen, initialView]);
 
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrl = import.meta.env.VITE_API_URL?.trim().replace(/\/$/, '') || '';
 
   const clearMessages = () => { setError(null); setSuccess(null); };
 
@@ -155,11 +155,15 @@ export default function LoginModal({
           password: formData.get('password') as string,
         }),
       });
+      const contentType = response.headers.get('content-type') || '';
       if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.detail || 'Login failed');
+        const payload = contentType.includes('application/json') ? await response.json() : { detail: await response.text() };
+        throw new Error(payload.detail || payload.message || 'Login failed');
       }
-      const data = await response.json();
+      const data = contentType.includes('application/json') ? await response.json() : null;
+      if (!data?.access_token || !data?.refresh_token) {
+        throw new Error('Login response was invalid. Please try again.');
+      }
       localStorage.setItem('access_token', data.access_token);
       localStorage.setItem('refresh_token', data.refresh_token);
       setSuccess('Successfully logged in!');
@@ -191,8 +195,9 @@ export default function LoginModal({
         }),
       });
       if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.detail || 'Registration failed');
+        const contentType = response.headers.get('content-type') || '';
+        const payload = contentType.includes('application/json') ? await response.json() : { detail: await response.text() };
+        throw new Error(payload.detail || payload.message || 'Registration failed');
       }
       setSuccess('OTP sent to your email. Please verify.');
       setRegistrationEmail(email);
@@ -216,11 +221,15 @@ export default function LoginModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: registrationEmail, otp }),
       });
+      const contentType = response.headers.get('content-type') || '';
       if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.detail || 'OTP verification failed');
+        const payload = contentType.includes('application/json') ? await response.json() : { detail: await response.text() };
+        throw new Error(payload.detail || payload.message || 'OTP verification failed');
       }
-      const data = await response.json();
+      const data = contentType.includes('application/json') ? await response.json() : null;
+      if (!data?.access_token || !data?.refresh_token) {
+        throw new Error('Verification response was invalid. Please try again.');
+      }
       localStorage.setItem('access_token', data.access_token);
       localStorage.setItem('refresh_token', data.refresh_token);
       setSuccess('Verification successful! Logging you in…');
@@ -245,8 +254,9 @@ export default function LoginModal({
         body: JSON.stringify({ email }),
       });
       if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.detail || 'Request failed. Please try again.');
+        const contentType = response.headers.get('content-type') || '';
+        const payload = contentType.includes('application/json') ? await response.json() : { detail: await response.text() };
+        throw new Error(payload.detail || payload.message || 'Request failed. Please try again.');
       }
       setView('forgot-sent');
     } catch (err: any) {
@@ -285,8 +295,9 @@ export default function LoginModal({
         body: JSON.stringify({ token: tokenValue, new_password: newPassword }),
       });
       if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.detail || 'Reset failed. The token may be invalid or expired.');
+        const contentType = response.headers.get('content-type') || '';
+        const payload = contentType.includes('application/json') ? await response.json() : { detail: await response.text() };
+        throw new Error(payload.detail || payload.message || 'Reset failed. The token may be invalid or expired.');
       }
       setSuccess('Password updated! Redirecting to login…');
       setTimeout(() => {
