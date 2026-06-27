@@ -18,6 +18,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [hasMuhuratRegistration, setHasMuhuratRegistration] = useState(false);
 
   // Password-reset token extracted from the URL (?token=...)
   const [resetToken, setResetToken] = useState('');
@@ -51,11 +52,13 @@ function App() {
         .then(data => {
           if (data.full_name) setUserName(data.full_name);
           if (data.email) setUserEmail(data.email);
+          setHasMuhuratRegistration(Boolean(data.registration_status));
         })
         .catch(err => console.error(err));
     } else {
       setUserName(null);
       setUserEmail(null);
+      setHasMuhuratRegistration(false);
     }
   }, [showLoginModal, showProfileModal]);
 
@@ -64,6 +67,7 @@ function App() {
     localStorage.removeItem('refresh_token');
     setIsLoggedIn(false);
     setUserName(null);
+    setHasMuhuratRegistration(false);
     setShowProfileModal(false);
     setShowLoginModal(false);
     setResetToken(''); // clear any stale reset token so re-opening login shows the login view
@@ -95,6 +99,7 @@ function App() {
         <About />
         <Events
           isLoggedIn={isLoggedIn}
+          hasMuhuratRegistration={hasMuhuratRegistration}
           onOpenMembership={() => setShowLoginModal(true)}
           onOpenMeetup={() => setShowMeetupModal(true)}
         />

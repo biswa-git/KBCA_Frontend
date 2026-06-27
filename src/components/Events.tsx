@@ -2,11 +2,12 @@ import useScrollReveal from '../hooks/useScrollReveal';
 
 interface EventsProps {
   isLoggedIn?: boolean;
+  hasMuhuratRegistration?: boolean;
   onOpenMembership?: () => void;
   onOpenMeetup?: () => void;
 }
 
-export default function Events({ isLoggedIn, onOpenMembership, onOpenMeetup }: EventsProps) {
+export default function Events({ isLoggedIn, hasMuhuratRegistration, onOpenMembership, onOpenMeetup }: EventsProps) {
   const { refs, isVisible } = useScrollReveal(3);
 
   return (
@@ -48,8 +49,13 @@ export default function Events({ isLoggedIn, onOpenMembership, onOpenMeetup }: E
                 className="btn-ghost"
                 style={{ fontSize: '0.78rem', padding: '11px 28px' }}
               >
-                Register Now
+                {isLoggedIn && hasMuhuratRegistration ? "You're already registered" : 'Register Now'}
               </button>
+              {isLoggedIn && hasMuhuratRegistration && (
+                <div style={{ marginTop: '10px', fontSize: '0.75rem', color: 'var(--gold)', fontStyle: 'italic' }}>
+                  See details
+                </div>
+              )}
               {!isLoggedIn && (
                 <div style={{ marginTop: '12px', fontSize: '0.75rem', color: 'rgba(250,247,242,0.5)', fontStyle: 'italic' }}>
                   * You need to be logged in to register.
