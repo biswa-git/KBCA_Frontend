@@ -415,7 +415,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
                 We found your Muhurat registration. Here are the details we have on file.
               </p>
 
-              <div style={{ marginTop: '24px', width: '100%', padding: '20px 22px', borderRadius: '18px', border: '1px solid var(--border-strong)', background: 'linear-gradient(135deg, rgba(255,215,130,0.12), rgba(250,247,242,0.03))', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
+              <div style={{ marginTop: '24px', width: 'min(100%, 560px)', marginLeft: 'auto', marginRight: 'auto', padding: '20px 22px', borderRadius: '18px', border: '1px solid var(--border-strong)', background: 'linear-gradient(135deg, rgba(255,215,130,0.12), rgba(250,247,242,0.03))', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
                 <div style={{ fontSize: '0.72rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '14px', fontWeight: 700 }}>
                   Registration details
                 </div>
