@@ -60,6 +60,19 @@ function SectionDivider({ label }: { label: string }) {
   );
 }
 
+function SubmitBtn({ label, isLoading }: { label: string, isLoading: boolean }) {
+  return (
+    <button
+      type="submit"
+      className="btn-primary"
+      disabled={isLoading}
+      style={{ marginTop: '32px', width: '100%', opacity: isLoading ? 0.7 : 1 }}
+    >
+      {isLoading ? 'Please wait…' : label}
+    </button>
+  );
+}
+
 export default function LoginModal({
   isOpen,
   onClose,
@@ -355,18 +368,6 @@ export default function LoginModal({
     );
   };
 
-  /* ─── SUBMIT BUTTON ──────────────────────────────────────────────── */
-  const SubmitBtn = ({ label }: { label: string }) => (
-    <button
-      type="submit"
-      className="btn-primary"
-      disabled={isLoading}
-      style={{ marginTop: '32px', width: '100%', opacity: isLoading ? 0.7 : 1 }}
-    >
-      {isLoading ? 'Please wait…' : label}
-    </button>
-  );
-
   /* ─── RENDER ─────────────────────────────────────────────────────── */
   return (
     <section className={`become-member ${isOpen ? 'open' : ''}`}>
@@ -400,7 +401,7 @@ export default function LoginModal({
                     style={{ textAlign: 'center', letterSpacing: '4px', fontSize: '1.2rem' }}
                   />
                 </div>
-                <SubmitBtn label="Verify & Login" />
+                <SubmitBtn label="Verify & Login" isLoading={isLoading} />
               </form>
               <div className="form-note reveal visible" style={{ marginTop: '24px', textAlign: 'center', transform: 'none', opacity: 1 }}>
                 <LinkButton onClick={() => { setView('register'); clearMessages(); }}>
@@ -432,7 +433,7 @@ export default function LoginModal({
                     autoComplete="email"
                   />
                 </div>
-                <SubmitBtn label="Send Reset Link" />
+                <SubmitBtn label="Send Reset Link" isLoading={isLoading} />
               </form>
               <div className="form-note reveal visible" style={{ marginTop: '24px', textAlign: 'center', transform: 'none', opacity: 1 }}>
                 <LinkButton onClick={goToLogin}>
@@ -536,7 +537,7 @@ export default function LoginModal({
                     autoComplete="new-password"
                   />
                 </div>
-                <SubmitBtn label="Update Password" />
+                <SubmitBtn label="Update Password" isLoading={isLoading} />
               </form>
             </>
           )}
@@ -606,7 +607,7 @@ export default function LoginModal({
                   </div>
                 )}
 
-                <SubmitBtn label={view === 'login' ? 'Login' : 'Register'} />
+                <SubmitBtn label={view === 'login' ? 'Login' : 'Register'} isLoading={isLoading} />
               </form>
 
               <div

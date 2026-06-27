@@ -52,6 +52,26 @@ interface MeetupRegistrationDetails {
 const ADULT_RATE = 250;
 const CHILD_RATE = 150;
 
+function RegistrationDetails({ registration }: { registration: MeetupRegistrationDetails }) {
+  return (
+    <div style={{ marginTop: '24px', width: 'min(100%, 560px)', marginLeft: 'auto', marginRight: 'auto', padding: '20px 22px', borderRadius: '18px', border: '1px solid var(--border-strong)', background: 'linear-gradient(135deg, rgba(255,215,130,0.12), rgba(250,247,242,0.03))', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
+      <div style={{ fontSize: '0.72rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '14px', fontWeight: 700 }}>
+        Registration details
+      </div>
+      <div style={{ display: 'grid', gap: '10px', textAlign: 'left', color: 'var(--cream)', fontSize: '0.95rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Venue</span><strong style={{ textAlign: 'right' }}>{registration.venue}</strong></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Date</span><strong style={{ textAlign: 'right' }}>{registration.date}</strong></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Time</span><strong style={{ textAlign: 'right' }}>{registration.time}</strong></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Total persons</span><strong style={{ textAlign: 'right' }}>{registration.adults + registration.children_6_12 + registration.children_under_6}</strong></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Adults</span><strong style={{ textAlign: 'right' }}>{registration.adults}</strong></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Children (6–12)</span><strong style={{ textAlign: 'right' }}>{registration.children_6_12}</strong></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Children (Under 6)</span><strong style={{ textAlign: 'right' }}>{registration.children_under_6}</strong></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--gold-dim)' }}>Amount paid</span><strong style={{ color: 'var(--gold)', textAlign: 'right' }}>₹{registration.amount_paid.toLocaleString('en-IN')}</strong></div>
+      </div>
+    </div>
+  );
+}
+
 export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: MeetupRegistrationModalProps) {
   const [adults, setAdults] = useState(1);
   const [kidsOlder, setKidsOlder] = useState(0);
@@ -415,21 +435,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
                 We found your Muhurat registration. Here are the details we have on file.
               </p>
 
-              <div style={{ marginTop: '24px', width: 'min(100%, 560px)', marginLeft: 'auto', marginRight: 'auto', padding: '20px 22px', borderRadius: '18px', border: '1px solid var(--border-strong)', background: 'linear-gradient(135deg, rgba(255,215,130,0.12), rgba(250,247,242,0.03))', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
-                <div style={{ fontSize: '0.72rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '14px', fontWeight: 700 }}>
-                  Registration details
-                </div>
-                <div style={{ display: 'grid', gap: '10px', textAlign: 'left', color: 'var(--cream)', fontSize: '0.95rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Venue</span><strong style={{ textAlign: 'right' }}>{existingRegistration.venue}</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Date</span><strong style={{ textAlign: 'right' }}>{existingRegistration.date}</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Time</span><strong style={{ textAlign: 'right' }}>{existingRegistration.time}</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Total persons</span><strong style={{ textAlign: 'right' }}>{existingRegistration.adults + existingRegistration.children_6_12 + existingRegistration.children_under_6}</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Adults</span><strong style={{ textAlign: 'right' }}>{existingRegistration.adults}</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Children (6–12)</span><strong style={{ textAlign: 'right' }}>{existingRegistration.children_6_12}</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Children (Under 6)</span><strong style={{ textAlign: 'right' }}>{existingRegistration.children_under_6}</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--gold-dim)' }}>Amount paid</span><strong style={{ color: 'var(--gold)', textAlign: 'right' }}>₹{existingRegistration.amount_paid.toLocaleString('en-IN')}</strong></div>
-                </div>
-              </div>
+              <RegistrationDetails registration={existingRegistration} />
 
               {registrationCheckError && <p className="meetup-error" style={{ marginTop: '16px' }}>{registrationCheckError}</p>}
 
@@ -540,21 +546,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail }: 
               </p>
 
               {successfulRegistration && (
-                <div style={{ marginTop: '24px', width: 'min(100%, 560px)', marginLeft: 'auto', marginRight: 'auto', padding: '20px 22px', borderRadius: '18px', border: '1px solid var(--border-strong)', background: 'linear-gradient(135deg, rgba(255,215,130,0.12), rgba(250,247,242,0.03))', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
-                  <div style={{ fontSize: '0.72rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '14px', fontWeight: 700 }}>
-                    Registration details
-                  </div>
-                  <div style={{ display: 'grid', gap: '10px', textAlign: 'left', color: 'var(--cream)', fontSize: '0.95rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Venue</span><strong style={{ textAlign: 'right' }}>{successfulRegistration.venue}</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Date</span><strong style={{ textAlign: 'right' }}>{successfulRegistration.date}</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Time</span><strong style={{ textAlign: 'right' }}>{successfulRegistration.time}</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Total persons</span><strong style={{ textAlign: 'right' }}>{successfulRegistration.adults + successfulRegistration.children_6_12 + successfulRegistration.children_under_6}</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Adults</span><strong style={{ textAlign: 'right' }}>{successfulRegistration.adults}</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Children (6–12)</span><strong style={{ textAlign: 'right' }}>{successfulRegistration.children_6_12}</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Children (Under 6)</span><strong style={{ textAlign: 'right' }}>{successfulRegistration.children_under_6}</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--gold-dim)' }}>Amount paid</span><strong style={{ color: 'var(--gold)', textAlign: 'right' }}>₹{successfulRegistration.amount_paid.toLocaleString('en-IN')}</strong></div>
-                  </div>
-                </div>
+                <RegistrationDetails registration={successfulRegistration} />
               )}
 
               <button className="btn-ghost" onClick={onClose} style={{ fontSize: '0.82rem', padding: '12px 40px', marginTop: '24px' }}>
