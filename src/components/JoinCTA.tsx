@@ -6,7 +6,7 @@ interface JoinCTAProps {
   onOpenProfile?: () => void;
 }
 
-export default function JoinCTA(props: JoinCTAProps) {
+export default function JoinCTA(_props: JoinCTAProps) {
   const { refs, isVisible } = useScrollReveal(4);
 
   return (
