@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import useScrollReveal from '../hooks/useScrollReveal';
+import closeCircleIcon from '../assets/close-circle.svg';
 
 type View = 'login' | 'register' | 'otp' | 'forgot' | 'forgot-sent' | 'reset';
 
@@ -383,7 +384,9 @@ export default function LoginModal({
   return (
     <section className={`become-member ${isOpen ? 'open' : ''}`}>
       <div className="become-member-content">
-        <button className="close-btn" onClick={onClose} aria-label="Close form">✕</button>
+        <button className="close-btn" onClick={onClose} aria-label="Close form">
+          <img src={closeCircleIcon} alt="Close" style={{ width: '18px', height: '18px' }} />
+        </button>
 
         <div className="become-member-inner">
 

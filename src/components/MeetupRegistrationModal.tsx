@@ -1,5 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '../api';
+import checkCircleIcon from '../assets/check-circle.svg';
+import closeCircleIcon from '../assets/close-circle.svg';
+import searchCircleIcon from '../assets/search-circle.svg';
+import celebrationBurstIcon from '../assets/celebration-burst.svg';
+import calendarIcon from '../assets/calendar.svg';
+import locationPinIcon from '../assets/location-pin.svg';
+import clockIcon from '../assets/clock.svg';
 
 declare global {
   interface Window {
@@ -430,13 +437,17 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
         aria-modal="true"
         aria-label="Meetup Registration"
       >
-        <button className="meetup-close" onClick={onClose} aria-label="Close">✕</button>
+        <button className="meetup-close" onClick={onClose} aria-label="Close">
+          <img src={closeCircleIcon} alt="Close" style={{ width: '24px', height: '24px' }} />
+        </button>
 
         <div className="meetup-page">
 
           {isCheckingRegistration ? (
             <div className="meetup-success">
-              <div className="meetup-success-icon">🔎</div>
+              <div className="meetup-success-icon">
+                <img src={searchCircleIcon} alt="Searching" style={{ width: '40px', height: '40px' }} />
+              </div>
               <div className="meetup-eyebrow" style={{ justifyContent: 'center' }}>Checking registration</div>
               <h2 className="meetup-success-title">Looking up your Muhurat booking…</h2>
               <p className="meetup-success-desc">
@@ -445,7 +456,9 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
             </div>
           ) : existingRegistration ? (
             <div className="meetup-success">
-              <div className="meetup-success-icon">✅</div>
+              <div className="meetup-success-icon">
+                <img src={checkCircleIcon} alt="Success" style={{ width: '40px', height: '40px' }} />
+              </div>
               <div className="meetup-eyebrow" style={{ justifyContent: 'center' }}>Already registered</div>
               <h2 className="meetup-success-title">You’re already on the <em>list!</em></h2>
               <p className="meetup-success-desc">
@@ -472,11 +485,20 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
 
                 {/* Event meta strip */}
                 <div className="meetup-meta-strip">
-                  <span>📅 19th July 2026</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                    <img src={calendarIcon} alt="" style={{ width: '20px', height: '20px' }} />
+                    19th July 2026
+                  </span>
                   <span className="meetup-meta-dot" />
-                  <span>📍 Axon Business Hotel</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                    <img src={locationPinIcon} alt="" style={{ width: '20px', height: '20px' }} />
+                    Axon Business Hotel
+                  </span>
                   <span className="meetup-meta-dot" />
-                  <span>🕕 6:00 PM Onwards</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                    <img src={clockIcon} alt="" style={{ width: '20px', height: '20px' }} />
+                    6:00 PM Onwards
+                  </span>
                 </div>
               </div>
 
@@ -555,7 +577,9 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
           ) : (
             /* ── Success state ── */
             <div className="meetup-success">
-              <div className="meetup-success-icon">🎉</div>
+              <div className="meetup-success-icon">
+                <img src={celebrationBurstIcon} alt="Success" style={{ width: '40px', height: '40px' }} />
+              </div>
               <div className="meetup-eyebrow" style={{ justifyContent: 'center' }}>সফল · Success</div>
               <h2 className="meetup-success-title">You're on the <em>List!</em></h2>
               <p className="meetup-success-desc">

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { apiFetch } from '../api';
+import closeCircleIcon from '../assets/close-circle.svg';
 
 interface UserProfileModalProps {
   isOpen: boolean;
@@ -57,7 +58,7 @@ export default function UserProfileModal({ isOpen, onClose, onLogout }: UserProf
     <section className={`become-member ${isOpen ? 'open' : ''}`}>
       <div className="become-member-content">
         <button className="close-btn" onClick={onClose} aria-label="Close profile">
-          ✕
+          <img src={closeCircleIcon} alt="Close" style={{ width: '18px', height: '18px' }} />
         </button>
 
         <div className="become-member-inner">

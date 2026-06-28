@@ -1,4 +1,5 @@
 import useScrollReveal from '../hooks/useScrollReveal';
+import locationPinIcon from '../assets/location-pin.svg';
 
 interface EventsProps {
   isLoggedIn?: boolean;
@@ -63,7 +64,10 @@ export default function Events({ isLoggedIn, hasMuhuratRegistration, onOpenMembe
               )}
             </div>
             <div className="event-meta" style={{ marginTop: '48px' }}>
-              <span>📍 Axon Business Hotel</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                <img src={locationPinIcon} alt="" style={{ width: '16px', height: '16px' }} />
+                Axon Business Hotel
+              </span>
               <span className="dot"></span>
               <span>₹250 Entry</span>
               <span className="dot"></span>
@@ -188,7 +192,10 @@ export default function Events({ isLoggedIn, hasMuhuratRegistration, onOpenMembe
             </div>
 
             <div className="event-meta">
-              <span>📍 Kondapur · Venue TBA</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                <img src={locationPinIcon} alt="" style={{ width: '16px', height: '16px' }} />
+                Kondapur · Venue TBA
+              </span>
               <span className="dot"></span>
               <span>5 Days</span>
               <span className="dot"></span>

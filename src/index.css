@@ -1381,7 +1381,7 @@ footer {
   right: 20px;
   width: 40px;
   height: 40px;
-  border: 1px solid var(--border);
+  border: none;
   background: transparent;
   color: var(--cream);
   font-size: 1.5rem;
@@ -1934,15 +1934,14 @@ footer {
   gap: 24px;
 }
 .meetup-success-icon {
-  width: 80px;
-  height: 80px;
-  border: 1px solid var(--border-strong);
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2.2rem;
-  background: rgba(201,168,76,0.06);
+  background: transparent;
 }
 .meetup-success-title {
   font-family: 'Cormorant Garamond', serif;

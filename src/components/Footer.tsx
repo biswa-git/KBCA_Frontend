@@ -83,13 +83,43 @@ export default function Footer({ isLoggedIn, onOpenMembership, onOpenProfile }: 
                 </a>
               </li>
               <li>
-                <a href="#">Gallery</a>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (isLoggedIn) {
+                      alert('Coming soon');
+                    }
+                  }}
+                >
+                  Gallery
+                </a>
               </li>
               <li>
-                <a href="#">Newsletter</a>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (isLoggedIn) {
+                      alert('Coming soon');
+                    }
+                  }}
+                >
+                  Newsletter
+                </a>
               </li>
               <li>
-                <a href="#">Volunteer</a>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (isLoggedIn) {
+                      alert('Coming soon');
+                    }
+                  }}
+                >
+                  Volunteer
+                </a>
               </li>
             </ul>
           </div>
@@ -117,12 +147,12 @@ export default function Footer({ isLoggedIn, onOpenMembership, onOpenProfile }: 
                 <span>Instagram</span>
               </a>
               <a
-                href="mailto:officialkbca@gmail.com"
+                href="mailto:support@kbcahyd.co.in"
                 className="social-icon"
                 aria-label="Email"
               >
                 <EmailIcon />
-                <span>officialkbca@gmail.com</span>
+                <span>support@kbcahyd.co.in</span>
               </a>
             </div>
           </div>
@@ -131,7 +161,7 @@ export default function Footer({ isLoggedIn, onOpenMembership, onOpenProfile }: 
           <div className="footer-copy">
             © 2026 Kondapur Bengali Cultural Association ·
             <a
-              href="mailto:officialkbca@gmail.com"
+              href="mailto:support@kbcahyd.co.in"
               style={{
                 color: 'inherit',
                 textDecoration: 'none',
@@ -145,7 +175,7 @@ export default function Footer({ isLoggedIn, onOpenMembership, onOpenProfile }: 
                 (e.target as HTMLAnchorElement).style.color = 'inherit';
               }}
             >
-              officialkbca@gmail.com
+              support@kbcahyd.co.in
             </a>
           </div>
           <div className="footer-kondapur">

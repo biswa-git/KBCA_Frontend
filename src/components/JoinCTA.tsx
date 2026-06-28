@@ -51,16 +51,22 @@ export default function JoinCTA({ isLoggedIn, onOpenMembership }: JoinCTAProps) 
           ref={refs[3]}
         >
           <button
-            onClick={() => {
-              if (!isLoggedIn && onOpenMembership) {
-                onOpenMembership();
-              }
+            onClick={(event) => {
+              event.preventDefault();
+              alert('Coming soon');
             }}
             className="btn-primary"
           >
             Become a Member
           </button>
-          <a href="#" className="btn-ghost">
+          <a
+            href="#"
+            className="btn-ghost"
+            onClick={(event) => {
+              event.preventDefault();
+              alert('Coming soon');
+            }}
+          >
             Volunteer With Us
           </a>
         </div>
