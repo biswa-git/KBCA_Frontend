@@ -322,8 +322,8 @@ export default function LoginModal({
     return (
       <div style={{
         position: 'fixed',
-        top: '24px',
-        right: '24px',
+        top: 'max(16px, env(safe-area-inset-top, 0px))',
+        right: 'max(16px, env(safe-area-inset-right, 0px))',
         zIndex: 40001,
         minWidth: '280px',
         maxWidth: 'min(360px, calc(100vw - 32px))',
@@ -338,6 +338,7 @@ export default function LoginModal({
         gap: '12px',
         animation: 'toastFadeIn 0.3s ease-out forwards',
         pointerEvents: 'auto',
+        willChange: 'transform',
       }}>
         <style>{`
           @keyframes toastFadeIn {
