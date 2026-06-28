@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import useScrollReveal from '../hooks/useScrollReveal';
 
 type View = 'login' | 'register' | 'otp' | 'forgot' | 'forgot-sent' | 'reset';
@@ -322,11 +323,10 @@ export default function LoginModal({
       <div style={{
         position: 'fixed',
         top: '24px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 10,
+        right: '24px',
+        zIndex: 40001,
         minWidth: '280px',
-        maxWidth: '90%',
+        maxWidth: 'min(360px, calc(100vw - 32px))',
         padding: '16px 24px',
         borderRadius: '8px',
         background: 'var(--bg-dark, #0a0a0a)',
@@ -337,11 +337,12 @@ export default function LoginModal({
         alignItems: 'center',
         gap: '12px',
         animation: 'toastFadeIn 0.3s ease-out forwards',
+        pointerEvents: 'auto',
       }}>
         <style>{`
           @keyframes toastFadeIn {
-            from { opacity: 0; transform: translate(-50%, -20px); }
-            to { opacity: 1; transform: translate(-50%, 0); }
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
           }
         `}</style>
         <div style={{
@@ -388,7 +389,7 @@ export default function LoginModal({
 
         <div className="become-member-inner">
 
-          {renderMessages()}
+          {createPortal(renderMessages(), document.body)}
 
           {/* ── OTP ── */}
           {view === 'otp' && (
