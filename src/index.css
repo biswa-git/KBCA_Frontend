@@ -1364,7 +1364,7 @@ footer {
   background: var(--ink);
   border: 1px solid var(--border);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-  padding: 60px 50px;
+  padding: 72px 50px 60px;
   transform: translateY(20px) scale(0.95);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   max-height: 90vh;
@@ -1431,6 +1431,7 @@ footer {
   font-weight: 300;
   color: var(--cream);
   line-height: 1.15;
+  margin-top: 8px;
   margin-bottom: 24px;
 }
 
@@ -1953,11 +1954,11 @@ footer {
 /* Success state */
 .meetup-success {
   text-align: center;
-  padding: 60px 0;
+  padding: 28px 0 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
 .meetup-success-icon {
   width: 88px;
