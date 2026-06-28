@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '../api';
 import checkCircleIcon from '../assets/check-circle.svg';
-import closeCircleIcon from '../assets/close-circle.svg';
 import searchCircleIcon from '../assets/search-circle.svg';
 import celebrationBurstIcon from '../assets/celebration-burst.svg';
 import calendarIcon from '../assets/calendar.svg';
@@ -438,7 +437,6 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
         aria-label="Meetup Registration"
       >
         <button className="meetup-close" onClick={onClose} aria-label="Close">
-          <img src={closeCircleIcon} alt="Close" style={{ width: '24px', height: '24px' }} />
         </button>
 
         <div className="meetup-page">

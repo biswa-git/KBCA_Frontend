@@ -19,7 +19,15 @@ export default function Events({ isLoggedIn, hasMuhuratRegistration, onOpenMembe
             <div className="section-label">আসন্ন অনুষ্ঠান · Upcoming</div>
             <h2>Events & Celebrations</h2>
           </div>
-          <a href="#" className="btn-ghost" style={{ fontSize: '0.78rem', padding: '11px 28px' }}>
+          <a
+            href="#"
+            className="btn-ghost"
+            style={{ fontSize: '0.78rem', padding: '11px 28px' }}
+            onClick={(event) => {
+              event.preventDefault();
+              alert('Coming soon');
+            }}
+          >
             View Calendar
           </a>
         </div>

@@ -1379,10 +1379,10 @@ footer {
   position: absolute;
   top: 20px;
   right: 20px;
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: transparent;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  background: var(--ink);
   color: var(--cream);
   font-size: 1.5rem;
   cursor: pointer;
@@ -1391,6 +1391,32 @@ footer {
   justify-content: center;
   transition: all 0.3s;
   z-index: 10;
+}
+
+.close-btn::before,
+.close-btn::after,
+.meetup-close::before,
+.meetup-close::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 999px;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.close-btn::before,
+.meetup-close::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.close-btn::after,
+.meetup-close::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
 }
 
 .close-btn:hover {
