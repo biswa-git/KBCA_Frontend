@@ -94,7 +94,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
   const [paymentError, setPaymentError] = useState('');
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [pendingPaymentSessionId, setPendingPaymentSessionId] = useState<string | null>(null);
-  const [pendingCashfreeTransactionId, setPendingCashfreeTransactionId] = useState<string | null>(null);
+  const [pendingCashfreeOrderId, setPendingCashfreeOrderId] = useState<string | null>(null);
   const checkoutMountRef = useRef<HTMLDivElement | null>(null);
 
   const total = adults * ADULT_RATE + kidsOlder * CHILD_RATE;
@@ -120,7 +120,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
         setRegistrationCheckError('');
         setUserPhone(null);
         setIsCheckingRegistration(false);
-        setPendingCashfreeTransactionId(null);
+        setPendingCashfreeOrderId(null);
       }, 500);
     }
   }, [isOpen]);
@@ -249,10 +249,10 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
         height: '100%',
       },
     }).then(async (result: any) => {
-      const transactionIdForRegistration = pendingCashfreeTransactionId;
+      const orderIdForRegistration = pendingCashfreeOrderId;
       setCheckoutOpen(false);
       setPendingPaymentSessionId(null);
-      setPendingCashfreeTransactionId(null);
+      setPendingCashfreeOrderId(null);
 
       if (result.error) {
         setPaymentError(result.error.message || 'Payment failed in checkout');
@@ -276,8 +276,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
             adults,
             children_6_12: kidsOlder,
             children_under_6: kidsUnder,
-            amount_paid: total,
-            cashfree_transaction_id: transactionIdForRegistration,
+            cashfree_order_id: orderIdForRegistration,
           }),
         });
 
@@ -302,11 +301,11 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
     }).catch((error: any) => {
       setCheckoutOpen(false);
       setPendingPaymentSessionId(null);
-      setPendingCashfreeTransactionId(null);
+      setPendingCashfreeOrderId(null);
       setPaymentError(error?.message || 'Payment failed in checkout');
       setIsProcessing(false);
     });
-  }, [pendingPaymentSessionId, pendingCashfreeTransactionId, cashfreeClient, checkoutOpen]);
+  }, [pendingPaymentSessionId, pendingCashfreeOrderId, cashfreeClient, checkoutOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -318,10 +317,9 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
     }
 
     setIsProcessing(true);
-    setPendingCashfreeTransactionId(null);
+    setPendingCashfreeOrderId(null);
 
     try {
-      const orderId = `kbca_meetup_${Date.now()}`;
       if (!userEmail) {
         throw new Error('Please log in before making a payment.');
       }
@@ -338,16 +336,10 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          order_amount: Number(total.toFixed(2)),
-          order_currency: 'INR',
-          order_id: orderId,
-          customer_details: {
-            customer_id: orderId,
-            customer_phone: normalizedPhone,
-          },
-          order_meta: {
-            return_url: window.location.href,
-          },
+          adults,
+          children_6_12: kidsOlder,
+          children_under_6: kidsUnder,
+          return_url: window.location.href,
         }),
       });
 
@@ -371,8 +363,8 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
         throw new Error('Payment session ID not provided by Cashfree');
       }
 
-      const transactionId = data.cf_order_id ?? data.order_id ?? null;
-      setPendingCashfreeTransactionId(transactionId);
+      const orderId = data.order_id ?? null;
+      setPendingCashfreeOrderId(orderId);
       setCheckoutOpen(true);
       setPendingPaymentSessionId(paymentSessionId);
     } catch (error) {
