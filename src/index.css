@@ -36,6 +36,195 @@ body {
   overflow-x: hidden;
 }
 
+.page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  background: radial-gradient(circle at top, rgba(255, 235, 190, 0.06), transparent 35%), linear-gradient(180deg, #090909 0%, #030303 100%);
+  overflow: hidden;
+}
+
+.page-loader::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+.loader-shell {
+  position: relative;
+  width: min(1200px, 100%);
+  max-width: 1200px;
+  padding: 60px 50px 44px;
+  border-radius: 30px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.loader-headline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 30px;
+  color: rgba(255, 255, 255, 0.72);
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  font-size: 0.77rem;
+  text-shadow: none;
+}
+
+.loader-headline::before {
+  content: '';
+  width: 68px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.85), transparent);
+}
+
+.loader-logo-grid {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 34px;
+  min-height: 380px;
+}
+.loader-logo-grid > .loader-logo-card {
+  width: min(900px, 100%);
+}
+
+.loader-logo-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  min-height: 380px;
+  padding: 44px 32px;
+  border-radius: 24px;
+  background: transparent;
+  border: none;
+  opacity: 1;
+  transform: translateY(24px) scale(0.94);
+  transition: transform 0.45s ease, opacity 0.45s ease;
+}
+
+.loader-logo-card.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.loader-logo-card img {
+  max-width: 520px;
+  max-height: 360px;
+  object-fit: contain;
+  filter: saturate(1.12) contrast(1.02);
+  transition: transform 0.35s ease;
+}
+
+.loader-logo-card.active img {
+  transform: scale(1.04);
+}
+
+.loader-logo-card span {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  color: rgba(255, 255, 255, 0.68);
+  text-transform: uppercase;
+}
+
+.loader-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.loader-text {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.92rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.loader-ghost-line {
+  width: 110px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), rgba(201, 168, 76, 0.72), rgba(255, 255, 255, 0.08));
+  animation: shimmer 1.8s infinite;
+}
+
+.loader-progress {
+  width: 100%;
+}
+
+.progress-track {
+  width: 100%;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(201, 168, 76, 1), rgba(255, 223, 111, 0.95));
+  box-shadow: 0 0 32px rgba(201, 168, 76, 0.28);
+  transition: width 0.18s ease-out;
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 42px;
+  height: 100%;
+  background: radial-gradient(circle at left, rgba(255, 255, 255, 0.8), transparent 55%);
+  opacity: 0.8;
+}
+
+.progress-copy {
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.88rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.progress-copy span:last-child {
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.app-blur {
+  filter: blur(0.2px);
+  pointer-events: none;
+  user-select: none;
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    transform: translateX(-40%);
+  }
+
+  50% {
+    transform: translateX(40%);
+  }
+}
+
 a, button, input, select, textarea, [role="button"], .nav-cta, .btn-primary, .btn-ghost, .social-icon, .close-btn {
   cursor: pointer;
 }

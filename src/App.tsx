@@ -1,4 +1,7 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+import sponsorTitleLogo from './assets/sponsor_title.jpg';
+import sponsorOtherLogo from './assets/sponsor_others.jpg';
 
 const REGISTRATION_STATE_KEY = 'kbca_has_muhurat_registration';
 import Navigation from './components/Navigation';
@@ -29,6 +32,10 @@ function App() {
 
   // Password-reset token extracted from the URL (?token=...)
   const [resetToken, setResetToken] = useState('');
+  const [loadingDone, setLoadingDone] = useState(false);
+  const [loadProgress, setLoadProgress] = useState(0);
+  const [activeSponsorIndex, setActiveSponsorIndex] = useState(0);
+  const [sponsorsReady, setSponsorsReady] = useState(false);
 
   // On mount: detect reset-password route or token query param and open the reset modal
   useEffect(() => {
@@ -44,6 +51,50 @@ function App() {
       setShowLoginModal(true);
     }
   }, []);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setLoadProgress(prev => Math.min(100, prev + Math.floor(Math.random() * 10) + 4));
+    }, 75);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const firstSponsorTimer = window.setTimeout(() => {
+      setActiveSponsorIndex(1);
+    }, 3000);
+
+    return () => window.clearTimeout(firstSponsorTimer);
+  }, []);
+
+  useEffect(() => {
+    if (activeSponsorIndex !== 1) {
+      return undefined;
+    }
+
+    const secondSponsorTimer = window.setTimeout(() => {
+      setSponsorsReady(true);
+    }, 3000);
+
+    return () => window.clearTimeout(secondSponsorTimer);
+  }, [activeSponsorIndex]);
+
+  useEffect(() => {
+    if (loadProgress >= 100 && sponsorsReady) {
+      const readyTimeout = window.setTimeout(() => setLoadingDone(true), 450);
+      return () => window.clearTimeout(readyTimeout);
+    }
+
+    return undefined;
+  }, [loadProgress, sponsorsReady]);
+
+  useEffect(() => {
+    document.body.style.overflow = !loadingDone ? 'hidden' : 'auto';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [loadingDone]);
 
   const syncRegistrationState = useCallback((registered: boolean) => {
     setHasMuhuratRegistration(registered);
@@ -97,26 +148,59 @@ function App() {
   };
 
   return (
-    <div className={`app-wrapper ${showLoginModal || showProfileModal ? 'member-panel-open' : ''}`}>
-      <Navigation
-        isLoggedIn={isLoggedIn}
-        userName={userName}
-        onOpenMembership={() => setShowLoginModal(true)}
-        onOpenProfile={() => setShowProfileModal(true)}
-      />
+    <>
+      {!loadingDone && (
+        <div className="page-loader">
+          <div className="loader-shell">
+            <div className="loader-headline">Preparing sponsor showcase</div>
+            <div className="loader-logo-grid">
+              {activeSponsorIndex === 0 && (
+                <div className="loader-logo-card active">
+                  <img src={sponsorTitleLogo} alt="Title sponsor logo" />
+                  <span>Title Sponsor</span>
+                </div>
+              )}
+              {activeSponsorIndex === 1 && (
+                <div className="loader-logo-card active">
+                  <img src={sponsorOtherLogo} alt="Supporting sponsor logo" />
+                  <span>Supporting Sponsor</span>
+                </div>
+              )}
+            </div>
+            <div className="loader-progress">
+              <div className="progress-track">
+                <div className="progress-fill" style={{ width: `${loadProgress}%` }} />
+              </div>
+              <div className="progress-copy">
+                <span>{loadProgress}%</span>
+                <span>{loadProgress < 100 ? 'Syncing visuals' : 'Ready to explore'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
-      <div className="app-main">
-        <Hero />
-        <About />
-        <Events
+      <div className={`app-wrapper ${showLoginModal || showProfileModal ? 'member-panel-open' : ''} ${!loadingDone ? 'app-blur' : ''}`}>
+        <Navigation
           isLoggedIn={isLoggedIn}
-          hasMuhuratRegistration={hasMuhuratRegistration}
+          userName={userName}
           onOpenMembership={() => setShowLoginModal(true)}
-          onOpenMeetup={() => setShowMeetupModal(true)}
+          onOpenProfile={() => setShowProfileModal(true)}
         />
-        <Programs />
-        <JoinCTA isLoggedIn={isLoggedIn} onOpenMembership={() => setShowLoginModal(true)} onOpenProfile={() => setShowProfileModal(true)} />
-        <Footer isLoggedIn={isLoggedIn} onOpenMembership={() => setShowLoginModal(true)} onOpenProfile={() => setShowProfileModal(true)} />
+
+        <div className="app-main">
+          <Hero />
+          <About />
+          <Events
+            isLoggedIn={isLoggedIn}
+            hasMuhuratRegistration={hasMuhuratRegistration}
+            onOpenMembership={() => setShowLoginModal(true)}
+            onOpenMeetup={() => setShowMeetupModal(true)}
+          />
+          <Programs />
+          <JoinCTA isLoggedIn={isLoggedIn} onOpenMembership={() => setShowLoginModal(true)} onOpenProfile={() => setShowProfileModal(true)} />
+          <Footer isLoggedIn={isLoggedIn} onOpenMembership={() => setShowLoginModal(true)} onOpenProfile={() => setShowProfileModal(true)} />
+        </div>
       </div>
 
       <LoginModal
@@ -137,7 +221,7 @@ function App() {
         userEmail={userEmail}
         onRegistrationChange={syncRegistrationState}
       />
-    </div>
+    </>
   );
 }
 
