@@ -89,6 +89,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
   const [isCheckingRegistration, setIsCheckingRegistration] = useState(false);
   const [registrationCheckError, setRegistrationCheckError] = useState('');
   const [cashfreeClient, setCashfreeClient] = useState<any>(null);
+  const [userPhone, setUserPhone] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState('');
   const [checkoutOpen, setCheckoutOpen] = useState(false);
@@ -117,6 +118,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
         setExistingRegistration(null);
         setSuccessfulRegistration(null);
         setRegistrationCheckError('');
+        setUserPhone(null);
         setIsCheckingRegistration(false);
         setPendingCashfreeTransactionId(null);
       }, 500);
@@ -157,6 +159,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
     const checkExistingRegistration = async () => {
       if (!userEmail) {
         setExistingRegistration(null);
+        setUserPhone(null);
         setRegistrationCheckError('');
         setIsCheckingRegistration(false);
         return;
@@ -181,6 +184,9 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
         const data = await response.json();
         if (!active) return;
 
+        const phoneFromProfile = typeof data.phone === 'string' ? data.phone.trim() : '';
+        setUserPhone(phoneFromProfile || null);
+
         if (data.registration_status) {
           onRegistrationChange?.(true);
           setExistingRegistration({
@@ -199,6 +205,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
       } catch (error) {
         if (!active) return;
         setExistingRegistration(null);
+        setUserPhone(null);
         setRegistrationCheckError((error as Error)?.message || 'Unable to verify your registration right now.');
       } finally {
         if (active) {
@@ -319,6 +326,11 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
         throw new Error('Please log in before making a payment.');
       }
 
+      const normalizedPhone = userPhone?.replace(/\D/g, '').trim();
+      if (!normalizedPhone) {
+        throw new Error('Please add a phone number to your profile before paying.');
+      }
+
       const response = await apiFetch('/cashfree-orders', {
         method: 'POST',
         headers: {
@@ -331,7 +343,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
           order_id: orderId,
           customer_details: {
             customer_id: orderId,
-            customer_phone: '9999999999',
+            customer_phone: normalizedPhone,
           },
           order_meta: {
             return_url: window.location.href,
