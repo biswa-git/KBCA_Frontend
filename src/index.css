@@ -1743,8 +1743,8 @@ footer {
 }
 .meetup-qr-card img {
   display: block;
-  width: min(100%, 260px);
-  max-width: 260px;
+  width: min(100%, 220px);
+  max-width: 220px;
   height: auto;
   border-radius: 10px;
 }
