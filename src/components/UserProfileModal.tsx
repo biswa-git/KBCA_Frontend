@@ -12,6 +12,7 @@ interface UserProfile {
   full_name: string;
   phone: string | null;
   address: string | null;
+  founding_member?: boolean;
 }
 
 export default function UserProfileModal({ isOpen, onClose, onLogout }: UserProfileModalProps) {
@@ -69,9 +70,14 @@ export default function UserProfileModal({ isOpen, onClose, onLogout }: UserProf
 
         {!loading && !error && profile && (
           <div style={{ marginBottom: '32px' }}>
-            <div style={{ marginBottom: '16px', borderBottom: '1px solid var(--border)', paddingBottom: '16px' }}>
-              <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--gold-dim)', display: 'block', marginBottom: '4px' }}>Name</span>
-              <span style={{ fontSize: '1.2rem', color: 'var(--cream)' }}>{profile.full_name}</span>
+            <div style={{ marginBottom: '16px', borderBottom: '1px solid var(--border)', paddingBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+              <div>
+                <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--gold-dim)', display: 'block', marginBottom: '4px' }}>Name</span>
+                <span style={{ fontSize: '1.2rem', color: 'var(--cream)' }}>{profile.full_name}</span>
+              </div>
+              {profile.founding_member && (
+                <span style={{ background: 'linear-gradient(90deg,var(--gold),var(--gold-dim))', color: '#111', padding: '6px 10px', borderRadius: '999px', fontSize: '0.8rem', fontWeight: 600 }}>Founding Member</span>
+              )}
             </div>
             
             <div style={{ marginBottom: '16px', borderBottom: '1px solid var(--border)', paddingBottom: '16px' }}>
