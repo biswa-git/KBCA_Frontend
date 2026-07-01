@@ -59,7 +59,10 @@ interface MeetupRegistrationDetails {
 const ADULT_RATE = 250;
 const CHILD_RATE = 150;
 
-function RegistrationDetails({ registration }: { registration: MeetupRegistrationDetails }) {
+const buildQrCodeUrl = (value: string) =>
+  `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(value)}&margin=2&ecc=M&format=png&bgcolor=ffffff&color=000000`;
+
+function RegistrationDetails({ registration, muhuratCode }: { registration: MeetupRegistrationDetails; muhuratCode?: string | null }) {
   return (
     <div style={{ marginTop: '24px', width: 'min(100%, 560px)', marginLeft: 'auto', marginRight: 'auto', padding: '20px 22px', borderRadius: '18px', border: '1px solid var(--border-strong)', background: 'linear-gradient(135deg, rgba(255,215,130,0.12), rgba(250,247,242,0.03))', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
       <div style={{ fontSize: '0.72rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '14px', fontWeight: 700 }}>
@@ -74,6 +77,16 @@ function RegistrationDetails({ registration }: { registration: MeetupRegistratio
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Children (6–12)</span><strong style={{ textAlign: 'right' }}>{registration.children_6_12}</strong></div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,215,130,0.14)' }}><span style={{ color: 'var(--gold-dim)' }}>Children (Under 6)</span><strong style={{ textAlign: 'right' }}>{registration.children_under_6}</strong></div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}><span style={{ color: 'var(--gold-dim)' }}>Amount paid</span><strong style={{ color: 'var(--gold)', textAlign: 'right' }}>₹{registration.amount_paid.toLocaleString('en-IN')}</strong></div>
+        {muhuratCode && (
+          <div style={{ paddingTop: '8px', borderTop: '1px solid rgba(255,215,130,0.14)', display: 'flex', justifyContent: 'center' }}>
+            <div className="meetup-qr-card">
+              <img
+                src={buildQrCodeUrl(muhuratCode)}
+                alt="Muhurat QR"
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -86,6 +99,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
   const [submitted, setSubmitted] = useState(false);
   const [existingRegistration, setExistingRegistration] = useState<MeetupRegistrationDetails | null>(null);
   const [successfulRegistration, setSuccessfulRegistration] = useState<MeetupRegistrationDetails | null>(null);
+  const [muhuratCode, setMuhuratCode] = useState<string | null>(null);
   const [isCheckingRegistration, setIsCheckingRegistration] = useState(false);
   const [registrationCheckError, setRegistrationCheckError] = useState('');
   const [cashfreeClient, setCashfreeClient] = useState<any>(null);
@@ -198,9 +212,11 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
             date: '19th July 2026',
             time: '6:00 PM Onwards',
           });
+          setMuhuratCode(data.muhurat_code || null);
         } else {
           onRegistrationChange?.(false);
           setExistingRegistration(null);
+          setMuhuratCode(null);
         }
       } catch (error) {
         if (!active) return;
@@ -285,6 +301,13 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
           throw new Error(errorText || 'Failed to record registration after payment');
         }
 
+        let regData: any = {};
+        try {
+          regData = await registrationResponse.json();
+        } catch {
+          regData = {};
+        }
+
         onRegistrationChange?.(true);
         setSuccessfulRegistration({
           adults,
@@ -295,6 +318,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
           date: '19th July 2026',
           time: '6:00 PM Onwards',
         });
+        setMuhuratCode(regData.muhurat_code || null);
         setSubmitted(true);
         setIsProcessing(false);
       }
@@ -464,11 +488,10 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
               <div className="meetup-eyebrow" style={{ justifyContent: 'center' }}>Already registered</div>
               <h2 className="meetup-success-title">You’re already on the <em>list!</em></h2>
               <p className="meetup-success-desc">
-                We found your Muhurat registration. Here are the details we have on file.
+                We found your Muhurat registration. Here are the details:
               </p>
 
-              <RegistrationDetails registration={existingRegistration} />
-
+              <RegistrationDetails registration={existingRegistration} muhuratCode={muhuratCode} />
               {registrationCheckError && <p className="meetup-error" style={{ marginTop: '16px' }}>{registrationCheckError}</p>}
 
               <button className="btn-ghost" onClick={onClose} style={{ fontSize: '0.82rem', padding: '12px 40px', marginTop: '24px' }}>
@@ -589,7 +612,7 @@ export default function MeetupRegistrationModal({ isOpen, onClose, userEmail, on
               </p>
 
               {successfulRegistration && (
-                <RegistrationDetails registration={successfulRegistration} />
+                <RegistrationDetails registration={successfulRegistration} muhuratCode={muhuratCode} />
               )}
 
               <button className="btn-ghost" onClick={onClose} style={{ fontSize: '0.82rem', padding: '12px 40px', marginTop: '24px' }}>
