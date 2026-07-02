@@ -138,8 +138,14 @@
       </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
-    <script>
+    <script type="module">
+      import { Html5Qrcode } from './src/verification-qrcode-loader.ts';
+
+      window.addEventListener('error', (event) => {
+        if (event.filename && event.filename.includes('html5-qrcode')) {
+          console.error('html5-qrcode failed to load:', event.error);
+        }
+      });
       const apiBase = (() => {
         const fromQuery = new URLSearchParams(window.location.search).get('api');
         if (fromQuery) return fromQuery.replace(/\/$/, '');
@@ -148,6 +154,8 @@
         }
         return window.location.origin;
       })();
+
+      const qrCodeClass = Html5Qrcode;
 
       const statusEl = document.getElementById('status');
       const detailsEl = document.getElementById('details');
@@ -264,7 +272,7 @@
           return;
         }
 
-        if (!window.Html5Qrcode) {
+        if (!qrCodeClass) {
           setStatus('Scanner library failed to load. Please refresh the page.', 'error');
           return;
         }
@@ -284,7 +292,7 @@
           setStatus('Requesting camera access…', 'info');
 
           if (!scanner) {
-            scanner = new Html5Qrcode('reader');
+            scanner = new qrCodeClass('reader');
           }
 
           await scanner.start(
