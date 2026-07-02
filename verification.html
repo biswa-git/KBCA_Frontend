@@ -3,138 +3,166 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KBCA Muhurat QR Verification</title>
+    <title>KBCA QR Scanner</title>
     <style>
       :root {
-        color-scheme: dark;
-        --bg: #071018;
-        --panel: rgba(7, 16, 24, 0.92);
-        --border: rgba(255, 215, 130, 0.25);
-        --gold: #f2c94c;
-        --text: #f7f3e8;
-        --muted: #9ba9b4;
-        --danger: #ff6b6b;
-        --success: #4dd38b;
+        --bg: #f8f9fa;
+        --surface: #ffffff;
+        --border: #dadce0;
+        --text-main: #202124;
+        --text-muted: #5f6368;
+        --primary: #1a73e8;
+        --primary-hover: #1765cc;
+        --success: #1e8e3e;
+        --success-hover: #1a7d36;
+        --danger: #d93025;
+        --radius: 8px;
       }
 
       * { box-sizing: border-box; }
+      
       body {
         margin: 0;
-        font-family: Inter, Arial, sans-serif;
-        background: radial-gradient(circle at top, #163345 0%, var(--bg) 55%, #02060a 100%);
-        color: var(--text);
+        font-family: 'Roboto', 'Inter', Arial, sans-serif;
+        background-color: var(--bg);
+        color: var(--text-main);
         min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 24px;
+        padding: 16px;
       }
 
       .card {
-        width: min(960px, 100%);
-        background: var(--panel);
+        width: min(600px, 100%);
+        background: var(--surface);
         border: 1px solid var(--border);
-        border-radius: 24px;
-        padding: 24px;
-        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+        border-radius: var(--radius);
+        padding: 32px 24px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
       }
 
-      h1 { margin: 0 0 10px; font-size: 2rem; }
-      p { color: var(--muted); line-height: 1.5; }
+      h1 { margin: 0 0 8px; font-size: 1.5rem; font-weight: 500; }
+      p.subtitle { color: var(--text-muted); margin: 0 0 24px; font-size: 0.95rem; }
 
-      .layout {
-        display: grid;
-        grid-template-columns: 1.1fr 0.9fr;
-        gap: 24px;
-        margin-top: 20px;
-      }
-
-      .panel {
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        padding: 18px;
-        background: rgba(255, 255, 255, 0.03);
-      }
-
-      #reader { min-height: 320px; border-radius: 16px; overflow: hidden; }
-      #reader video { width: 100%; border-radius: 16px; }
-
-      .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
-      button, input {
-        font: inherit;
-        border-radius: 999px;
-        border: 1px solid var(--border);
-        padding: 10px 14px;
-      }
-      button {
-        background: var(--gold);
-        color: #0b1117;
-        cursor: pointer;
-        font-weight: 700;
-      }
-      button.secondary {
-        background: transparent;
-        color: var(--text);
-      }
-      button:disabled { opacity: 0.65; cursor: not-allowed; }
-      input {
-        background: rgba(255,255,255,0.05);
-        color: var(--text);
+      #reader-container {
         width: 100%;
+        max-width: 400px;
+        aspect-ratio: 1;
+        margin: 0 auto 24px;
+        background: #e8eaed;
+        border-radius: var(--radius);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
       }
+
+      #reader-container video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 16px;
+      }
+
+      button {
+        font-family: inherit;
+        font-size: 0.9rem;
+        font-weight: 500;
+        letter-spacing: 0.25px;
+        border-radius: 4px;
+        border: none;
+        padding: 10px 24px;
+        cursor: pointer;
+        transition: background-color 0.2s, box-shadow 0.2s;
+      }
+
+      button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+      button.primary {
+        background-color: var(--primary);
+        color: white;
+      }
+      button.primary:hover:not(:disabled) { background-color: var(--primary-hover); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+
+      button.success-btn {
+        background-color: var(--success);
+        color: white;
+      }
+      button.success-btn:hover:not(:disabled) { background-color: var(--success-hover); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+
+      button.secondary {
+        background-color: transparent;
+        color: var(--primary);
+        border: 1px solid var(--border);
+      }
+      button.secondary:hover:not(:disabled) { background-color: #f1f3f4; }
 
       .status {
-        margin-top: 16px;
-        padding: 12px 14px;
-        border-radius: 12px;
-        border: 1px solid transparent;
-        min-height: 48px;
+        margin: 16px 0;
+        padding: 12px;
+        border-radius: var(--radius);
+        font-size: 0.9rem;
+        display: none;
       }
-      .status.error { background: rgba(255, 107, 107, 0.12); border-color: rgba(255, 107, 107, 0.3); color: #ffd7d7; }
-      .status.success { background: rgba(77, 211, 139, 0.12); border-color: rgba(77, 211, 139, 0.3); color: #d7ffe9; }
-      .status.info { background: rgba(242, 201, 76, 0.12); border-color: rgba(242, 201, 76, 0.3); color: #fff2c2; }
+      .status.error { background: #fce8e6; color: var(--danger); display: block; }
+      .status.success { background: #e6f4ea; color: var(--success); display: block; }
+      .status.info { background: #e8f0fe; color: var(--primary); display: block; }
 
-      .details { margin-top: 14px; display: grid; gap: 8px; }
-      .details div {
+      .details {
+        text-align: left;
+        background: #f8f9fa;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-top: 16px;
+        display: none;
+      }
+
+      .details.visible { display: block; }
+
+      .details-row {
         display: flex;
         justify-content: space-between;
-        gap: 12px;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-        padding-bottom: 8px;
+        padding: 8px 0;
+        border-bottom: 1px solid #e8eaed;
       }
-      .value { text-align: right; color: #fff; }
-      .muted { color: var(--muted); }
-
-      @media (max-width: 800px) {
-        .layout { grid-template-columns: 1fr; }
-      }
+      .details-row:last-child { border-bottom: none; }
+      
+      .details-label { color: var(--text-muted); font-size: 0.9rem; }
+      .details-value { font-weight: 500; color: var(--text-main); font-size: 0.95rem; }
     </style>
   </head>
   <body>
     <main class="card">
-      <h1>Muhurat QR Verification</h1>
-      <p>Scan a registration QR code or paste the Muhurat code below to verify the registration and approve the entry.</p>
+      <h1>QR Check-in</h1>
+      <p class="subtitle">Scan registration code to verify and approve</p>
 
-      <div class="layout">
-        <section class="panel">
-          <div id="reader"></div>
-          <div class="actions">
-            <button id="startScan" type="button">Start camera scan</button>
-            <button id="stopScan" class="secondary" type="button">Stop camera</button>
-          </div>
-        </section>
+      <div id="reader-container">
+        <div id="reader-placeholder" style="color: var(--text-muted); font-size: 0.9rem;">Camera inactive</div>
+        <video id="video-feed" playsinline muted style="display: none;"></video>
+      </div>
 
-        <section class="panel">
-          <label class="muted" for="manualCode">Muhurat code</label>
-          <input id="manualCode" placeholder="Paste QR value here" />
-          <div class="actions">
-            <button id="verifyButton" type="button">Verify code</button>
-            <button id="approveButton" class="secondary" type="button" disabled>Approve entry</button>
-          </div>
+      <div class="actions" id="scanActions">
+        <button id="startScan" class="primary">Start Camera</button>
+        <button id="stopScan" class="secondary" style="display: none;">Stop Camera</button>
+      </div>
 
-          <div id="status" class="status info">Waiting for a QR code or manual value.</div>
-          <div id="details" class="details"></div>
-        </section>
+      <div id="status" class="status info"></div>
+      
+      <div id="details" class="details"></div>
+
+      <div class="actions" id="approveActions" style="display: none;">
+        <button id="approveButton" class="success-btn">Approve Entry</button>
+        <button id="cancelButton" class="secondary">Cancel / Scan Next</button>
       </div>
     </main>
 
@@ -150,7 +178,6 @@
           return 'http://127.0.0.1:8000';
         }
         
-        // If testing on a local network IP, point to the backend port
         if (host.startsWith('192.168.') || host.startsWith('10.') || host.startsWith('172.')) {
           return `http://${host}:8000`;
         }
@@ -160,44 +187,59 @@
 
       const statusEl = document.getElementById('status');
       const detailsEl = document.getElementById('details');
-      const manualCodeInput = document.getElementById('manualCode');
-      const verifyButton = document.getElementById('verifyButton');
-      const approveButton = document.getElementById('approveButton');
+      const videoEl = document.getElementById('video-feed');
+      const placeholderEl = document.getElementById('reader-placeholder');
+      
       const startScanButton = document.getElementById('startScan');
       const stopScanButton = document.getElementById('stopScan');
-      let scanner = null;
+      const scanActions = document.getElementById('scanActions');
+      
+      const approveActions = document.getElementById('approveActions');
+      const approveButton = document.getElementById('approveButton');
+      const cancelButton = document.getElementById('cancelButton');
+
+      let stream = null;
       let isScanning = false;
+      let isPaused = false;
       let currentCode = '';
-      let currentResult = null;
 
       const setStatus = (message, type = 'info') => {
+        if (!message) {
+          statusEl.style.display = 'none';
+          return;
+        }
         statusEl.className = `status ${type}`;
         statusEl.textContent = message;
       };
 
       const renderDetails = (user) => {
         if (!user) {
+          detailsEl.classList.remove('visible');
           detailsEl.innerHTML = '';
           return;
         }
 
         detailsEl.innerHTML = `
-          <div><span class="muted">Name</span><span class="value">${user.full_name || '—'}</span></div>
-          <div><span class="muted">Email</span><span class="value">${user.email || '—'}</span></div>
-          <div><span class="muted">Phone</span><span class="value">${user.phone || '—'}</span></div>
-          <div><span class="muted">Registration</span><span class="value">${user.registration_status ? 'Confirmed' : 'Pending'}</span></div>
-          <div><span class="muted">Adults</span><span class="value">${user.registered_adults}</span></div>
-          <div><span class="muted">Children (6-12)</span><span class="value">${user.registered_children_6_12}</span></div>
-          <div><span class="muted">Children (under 6)</span><span class="value">${user.registered_children_under_6}</span></div>
-          <div><span class="muted">Amount paid</span><span class="value">₹${user.amount_paid}</span></div>
-          <div><span class="muted">Muhurat entry</span><span class="value">${user.muhurat_entry ? 'Approved' : 'Pending'}</span></div>
+          <div class="details-row"><span class="details-label">Name</span><span class="details-value">${user.full_name || '—'}</span></div>
+          <div class="details-row"><span class="details-label">Adults</span><span class="details-value">${user.registered_adults}</span></div>
+          <div class="details-row"><span class="details-label">Children (6-12)</span><span class="details-value">${user.registered_children_6_12}</span></div>
+          <div class="details-row"><span class="details-label">Status</span><span class="details-value" style="color: ${user.muhurat_entry ? 'var(--danger)' : 'var(--success)'}">${user.muhurat_entry ? 'Already Approved' : 'Ready'}</span></div>
         `;
+        detailsEl.classList.add('visible');
+      };
+
+      const resetUI = () => {
+        currentCode = '';
+        renderDetails(null);
+        approveActions.style.display = 'none';
+        scanActions.style.display = 'flex';
+        setStatus(isScanning ? 'Point camera at QR code.' : '', 'info');
+        isPaused = false;
       };
 
       async function requestVerification(code) {
-        verifyButton.disabled = true;
-        approveButton.disabled = true;
-        setStatus('Verifying QR value…', 'info');
+        setStatus('Verifying...', 'info');
+        scanActions.style.display = 'none';
 
         try {
           const response = await fetch(`${apiBase}/verify-muhurat-code`, {
@@ -211,42 +253,41 @@
           if (contentType && contentType.includes("application/json")) {
             data = await response.json();
           } else {
-            throw new Error(`Server returned non-JSON response (${response.status}). Is the API URL correct?`);
+            throw new Error(`Server error (${response.status}). Is the API URL correct?`);
           }
 
           if (!response.ok) {
             let errorMsg = data.detail || 'Verification failed';
-            if (Array.isArray(errorMsg)) {
-              errorMsg = errorMsg.map(e => e.msg || e.type).join(', ');
-            } else if (typeof errorMsg === 'object') {
-              errorMsg = JSON.stringify(errorMsg);
-            }
+            if (Array.isArray(errorMsg)) errorMsg = errorMsg.map(e => e.msg || e.type).join(', ');
             throw new Error(errorMsg);
           }
 
           currentCode = code;
-          currentResult = data;
           renderDetails(data);
-          setStatus(`Registration found for ${data.full_name || data.email || 'the attendee'}.`, 'success');
-          approveButton.disabled = false;
+          
+          if (data.muhurat_entry) {
+            setStatus('This registration has already been approved!', 'error');
+          } else {
+            setStatus('Registration verified.', 'success');
+          }
+          
+          approveActions.style.display = 'flex';
+          approveButton.disabled = data.muhurat_entry === true;
+
         } catch (error) {
-          currentResult = null;
           renderDetails(null);
-          setStatus(`Debug: ${error.name}: ${error.message}. apiBase: ${apiBase}`, 'error');
-          console.error(error);
-        } finally {
-          verifyButton.disabled = false;
+          setStatus(error.message || 'Unable to verify code.', 'error');
+          approveActions.style.display = 'flex';
+          approveButton.disabled = true;
         }
       }
 
       async function approveCurrentCode() {
-        if (!currentCode) {
-          setStatus('Verify a code first before approving.', 'error');
-          return;
-        }
+        if (!currentCode) return;
 
         approveButton.disabled = true;
-        setStatus('Approving entry…', 'info');
+        cancelButton.disabled = true;
+        setStatus('Approving entry...', 'info');
 
         try {
           const response = await fetch(`${apiBase}/approve-muhurat-entry`, {
@@ -260,114 +301,110 @@
           if (contentType && contentType.includes("application/json")) {
             data = await response.json();
           } else {
-            throw new Error(`Server returned non-JSON response (${response.status}). Is the API URL correct?`);
+            throw new Error(`Server error (${response.status}).`);
           }
 
           if (!response.ok) {
             let errorMsg = data.detail || 'Approval failed';
-            if (Array.isArray(errorMsg)) {
-              errorMsg = errorMsg.map(e => e.msg || e.type).join(', ');
-            } else if (typeof errorMsg === 'object') {
-              errorMsg = JSON.stringify(errorMsg);
-            }
+            if (Array.isArray(errorMsg)) errorMsg = errorMsg.map(e => e.msg || e.type).join(', ');
             throw new Error(errorMsg);
           }
 
-          currentResult = data;
-          renderDetails(data);
-          setStatus('Muhurat entry approved successfully.', 'success');
+          setStatus('Entry approved successfully!', 'success');
+          
+          // Auto reset after 2 seconds
+          setTimeout(() => {
+            resetUI();
+            cancelButton.disabled = false;
+            approveButton.disabled = false;
+          }, 2000);
+
         } catch (error) {
           setStatus(error.message || 'Approval failed.', 'error');
-        } finally {
+          cancelButton.disabled = false;
           approveButton.disabled = false;
         }
       }
 
-      verifyButton.addEventListener('click', () => {
-        const code = manualCodeInput.value.trim();
-        if (!code) {
-          setStatus('Please enter a Muhurat code first.', 'error');
-          return;
-        }
-        requestVerification(code);
-      });
-
-      approveButton.addEventListener('click', approveCurrentCode);
-
       async function startScanner() {
         if (!navigator.mediaDevices?.getUserMedia) {
-          setStatus('This browser does not support camera scanning.', 'error');
-          return;
-        }
-
-        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
-          setStatus('Camera scanning requires HTTPS or localhost.', 'error');
+          setStatus('Browser does not support camera.', 'error');
           return;
         }
 
         try {
           startScanButton.disabled = true;
-          setStatus('Requesting camera access…', 'info');
+          setStatus('Requesting camera access...', 'info');
 
-          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-          const video = document.createElement('video');
-          video.srcObject = stream;
-          video.setAttribute('playsinline', 'true');
-          video.muted = true;
-          const reader = document.getElementById('reader');
-          reader.innerHTML = '';
-          reader.appendChild(video);
-          await video.play();
+          stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+          videoEl.srcObject = stream;
+          
+          await new Promise((resolve) => {
+            videoEl.onloadedmetadata = () => {
+              resolve();
+            };
+          });
+          await videoEl.play();
+
+          videoEl.style.display = 'block';
+          placeholderEl.style.display = 'none';
+          
+          startScanButton.style.display = 'none';
+          stopScanButton.style.display = 'block';
+          startScanButton.disabled = false;
 
           const canvas = document.createElement('canvas');
-          const context = canvas.getContext('2d');
-          let stopped = false;
+          const context = canvas.getContext('2d', { willReadFrequently: true });
+          isScanning = true;
+          isPaused = false;
+          setStatus('Point camera at QR code.', 'info');
 
           const tick = () => {
-            if (stopped) return;
-            if (video.readyState >= 2) {
-              canvas.width = video.videoWidth;
-              canvas.height = video.videoHeight;
-              context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            if (!isScanning) return;
+            
+            if (!isPaused && videoEl.readyState >= 2) {
+              canvas.width = videoEl.videoWidth;
+              canvas.height = videoEl.videoHeight;
+              context.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+              
               const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-              const code = jsQR(imageData.data, canvas.width, canvas.height);
-              if (code) {
-                stopped = true;
-                stream.getTracks().forEach((track) => track.stop());
-                reader.innerHTML = '';
-                manualCodeInput.value = code.data;
+              const code = jsQR(imageData.data, canvas.width, canvas.height, { inversionAttempts: "dontInvert" });
+              
+              if (code && code.data) {
+                isPaused = true;
                 requestVerification(code.data);
-                setStatus('QR code detected.', 'success');
-                return;
               }
             }
             requestAnimationFrame(tick);
           };
-
-          isScanning = true;
-          setStatus('Camera ready. Point it at the QR code.', 'success');
+          
           tick();
         } catch (error) {
           isScanning = false;
-          setStatus(error?.message || 'Unable to start the camera scanner.', 'error');
-        } finally {
           startScanButton.disabled = false;
+          setStatus('Unable to access camera.', 'error');
         }
       }
 
-      async function stopScanner() {
-        if (!isScanning) {
-          return;
+      function stopScanner() {
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+          stream = null;
         }
-
-        const reader = document.getElementById('reader');
-        reader.innerHTML = '';
         isScanning = false;
+        videoEl.style.display = 'none';
+        placeholderEl.style.display = 'block';
+        
+        startScanButton.style.display = 'block';
+        stopScanButton.style.display = 'none';
+        resetUI();
         setStatus('Camera stopped.', 'info');
       }
 
       startScanButton.addEventListener('click', startScanner);
       stopScanButton.addEventListener('click', stopScanner);
+      approveButton.addEventListener('click', approveCurrentCode);
+      cancelButton.addEventListener('click', resetUI);
     </script>
   </body>
 </html>
