@@ -157,6 +157,7 @@
       const startScanButton = document.getElementById('startScan');
       const stopScanButton = document.getElementById('stopScan');
       let scanner = null;
+      let isScanning = false;
       let currentCode = '';
       let currentResult = null;
 
@@ -257,33 +258,73 @@
 
       approveButton.addEventListener('click', approveCurrentCode);
 
-      startScanButton.addEventListener('click', () => {
-        if (scanner) {
-          scanner.resume();
+      async function startScanner() {
+        if (isScanning && scanner) {
+          setStatus('Camera is already running.', 'info');
           return;
         }
 
-        scanner = new Html5Qrcode('reader');
-        scanner.start(
-          { facingMode: 'environment' },
-          { fps: 10, qrbox: { width: 220, height: 220 } },
-          (decodedText) => {
-            manualCodeInput.value = decodedText;
-            requestVerification(decodedText);
-            scanner.stop().catch(() => {});
-          },
-          () => {}
-        ).catch((error) => {
-          setStatus(error?.message || 'Unable to start the camera scanner.', 'error');
-        });
-      });
+        if (!window.Html5Qrcode) {
+          setStatus('Scanner library failed to load. Please refresh the page.', 'error');
+          return;
+        }
 
-      stopScanButton.addEventListener('click', () => {
-        if (!scanner) return;
-        scanner.stop().catch(() => {}).finally(() => {
+        if (!navigator.mediaDevices?.getUserMedia) {
+          setStatus('This browser does not support camera scanning.', 'error');
+          return;
+        }
+
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+          setStatus('Camera scanning requires HTTPS or localhost.', 'error');
+          return;
+        }
+
+        try {
+          startScanButton.disabled = true;
+          setStatus('Requesting camera access…', 'info');
+
+          if (!scanner) {
+            scanner = new Html5Qrcode('reader');
+          }
+
+          await scanner.start(
+            { facingMode: 'environment' },
+            { fps: 10, qrbox: { width: 220, height: 220 } },
+            (decodedText) => {
+              manualCodeInput.value = decodedText;
+              requestVerification(decodedText);
+              scanner.stop().catch(() => {});
+              isScanning = false;
+            },
+            () => {}
+          );
+
+          isScanning = true;
+          setStatus('Camera ready. Point it at the QR code.', 'success');
+        } catch (error) {
+          isScanning = false;
+          setStatus(error?.message || 'Unable to start the camera scanner.', 'error');
+        } finally {
+          startScanButton.disabled = false;
+        }
+      }
+
+      async function stopScanner() {
+        if (!scanner || !isScanning) {
+          return;
+        }
+
+        try {
+          await scanner.stop();
+          isScanning = false;
           setStatus('Camera stopped.', 'info');
-        });
-      });
+        } catch (error) {
+          setStatus(error?.message || 'Unable to stop the camera scanner.', 'error');
+        }
+      }
+
+      startScanButton.addEventListener('click', startScanner);
+      stopScanButton.addEventListener('click', stopScanner);
     </script>
   </body>
 </html>
