@@ -225,6 +225,8 @@
 
         detailsEl.innerHTML = `
           <div class="details-row"><span class="details-label">Name</span><span class="details-value">${user.full_name || '—'}</span></div>
+          <div class="details-row"><span class="details-label">Email</span><span class="details-value" style="font-size: 0.85em; word-break: break-all;">${user.email || '—'}</span></div>
+          <div class="details-row"><span class="details-label">Phone</span><span class="details-value">${user.phone || '—'}</span></div>
           <div class="details-row"><span class="details-label">Adults</span><span class="details-value">${user.registered_adults}</span></div>
           <div class="details-row"><span class="details-label">Children (6-12)</span><span class="details-value">${user.registered_children_6_12}</span></div>
           <div class="details-row"><span class="details-label">Children (< 6)</span><span class="details-value">${user.registered_children_under_6}</span></div>
