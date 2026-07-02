@@ -144,10 +144,18 @@
       const apiBase = (() => {
         const fromQuery = new URLSearchParams(window.location.search).get('api');
         if (fromQuery) return fromQuery.replace(/\/$/, '');
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        
+        const host = window.location.hostname;
+        if (host === 'localhost' || host === '127.0.0.1') {
           return 'http://127.0.0.1:8000';
         }
-        return window.location.origin;
+        
+        // If testing on a local network IP, point to the backend port
+        if (host.startsWith('192.168.') || host.startsWith('10.') || host.startsWith('172.')) {
+          return `http://${host}:8000`;
+        }
+        
+        return 'https://kbca-backend.onrender.com';
       })();
 
       const statusEl = document.getElementById('status');
@@ -198,9 +206,22 @@
             body: JSON.stringify({ muhurat_code: code })
           });
 
-          const data = await response.json();
+          const contentType = response.headers.get("content-type");
+          let data;
+          if (contentType && contentType.includes("application/json")) {
+            data = await response.json();
+          } else {
+            throw new Error(`Server returned non-JSON response (${response.status}). Is the API URL correct?`);
+          }
+
           if (!response.ok) {
-            throw new Error(data.detail || 'Verification failed');
+            let errorMsg = data.detail || 'Verification failed';
+            if (Array.isArray(errorMsg)) {
+              errorMsg = errorMsg.map(e => e.msg || e.type).join(', ');
+            } else if (typeof errorMsg === 'object') {
+              errorMsg = JSON.stringify(errorMsg);
+            }
+            throw new Error(errorMsg);
           }
 
           currentCode = code;
@@ -233,9 +254,22 @@
             body: JSON.stringify({ muhurat_code: currentCode })
           });
 
-          const data = await response.json();
+          const contentType = response.headers.get("content-type");
+          let data;
+          if (contentType && contentType.includes("application/json")) {
+            data = await response.json();
+          } else {
+            throw new Error(`Server returned non-JSON response (${response.status}). Is the API URL correct?`);
+          }
+
           if (!response.ok) {
-            throw new Error(data.detail || 'Approval failed');
+            let errorMsg = data.detail || 'Approval failed';
+            if (Array.isArray(errorMsg)) {
+              errorMsg = errorMsg.map(e => e.msg || e.type).join(', ');
+            } else if (typeof errorMsg === 'object') {
+              errorMsg = JSON.stringify(errorMsg);
+            }
+            throw new Error(errorMsg);
           }
 
           currentResult = data;
