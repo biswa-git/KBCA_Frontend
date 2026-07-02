@@ -146,14 +146,15 @@
       <h1>QR Check-in</h1>
       <p class="subtitle">Scan registration code to verify and approve</p>
 
-      <div id="reader-container">
-        <div id="reader-placeholder" style="color: var(--text-muted); font-size: 0.9rem;">Camera inactive</div>
+      <div id="reader-container" style="display: none;">
+        <div id="reader-placeholder" style="color: var(--text-muted); font-size: 0.9rem;">Camera active (feed hidden)</div>
         <video id="video-feed" playsinline muted style="display: none;"></video>
       </div>
 
       <div class="actions" id="scanActions">
         <button id="startScan" class="primary">Start Camera</button>
         <button id="stopScan" class="secondary" style="display: none;">Stop Camera</button>
+        <button id="toggleFeed" class="secondary" style="display: none;">Show Camera View</button>
       </div>
 
       <div id="status" class="status info"></div>
@@ -192,7 +193,9 @@
       
       const startScanButton = document.getElementById('startScan');
       const stopScanButton = document.getElementById('stopScan');
+      const toggleFeedButton = document.getElementById('toggleFeed');
       const scanActions = document.getElementById('scanActions');
+      const readerContainer = document.getElementById('reader-container');
       
       const approveActions = document.getElementById('approveActions');
       const approveButton = document.getElementById('approveButton');
@@ -201,6 +204,7 @@
       let stream = null;
       let isScanning = false;
       let isPaused = false;
+      let isFeedVisible = false;
       let currentCode = '';
 
       const setStatus = (message, type = 'info') => {
@@ -351,6 +355,7 @@
           
           startScanButton.style.display = 'none';
           stopScanButton.style.display = 'block';
+          toggleFeedButton.style.display = 'block';
           startScanButton.disabled = false;
 
           const canvas = document.createElement('canvas');
@@ -394,15 +399,31 @@
         isScanning = false;
         videoEl.style.display = 'none';
         placeholderEl.style.display = 'block';
+        readerContainer.style.display = 'none';
+        isFeedVisible = false;
+        toggleFeedButton.textContent = 'Show Camera View';
         
         startScanButton.style.display = 'block';
         stopScanButton.style.display = 'none';
+        toggleFeedButton.style.display = 'none';
         resetUI();
         setStatus('Camera stopped.', 'info');
       }
 
+      function toggleCameraFeed() {
+        isFeedVisible = !isFeedVisible;
+        if (isFeedVisible) {
+          readerContainer.style.display = 'flex';
+          toggleFeedButton.textContent = 'Hide Camera View';
+        } else {
+          readerContainer.style.display = 'none';
+          toggleFeedButton.textContent = 'Show Camera View';
+        }
+      }
+
       startScanButton.addEventListener('click', startScanner);
       stopScanButton.addEventListener('click', stopScanner);
+      toggleFeedButton.addEventListener('click', toggleCameraFeed);
       approveButton.addEventListener('click', approveCurrentCode);
       cancelButton.addEventListener('click', resetUI);
     </script>
