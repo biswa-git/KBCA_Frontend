@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "globals": "^17.7.0",
-    "html5-qrcode": "^2.3.8",
+    "jsqr": "^1.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

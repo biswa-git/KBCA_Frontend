@@ -139,13 +139,8 @@
     </main>
 
     <script type="module">
-      import { Html5Qrcode } from 'html5-qrcode';
+      import jsQR from 'jsqr';
 
-      window.addEventListener('error', (event) => {
-        if (event.filename && event.filename.includes('html5-qrcode')) {
-          console.error('html5-qrcode failed to load:', event.error);
-        }
-      });
       const apiBase = (() => {
         const fromQuery = new URLSearchParams(window.location.search).get('api');
         if (fromQuery) return fromQuery.replace(/\/$/, '');
@@ -154,8 +149,6 @@
         }
         return window.location.origin;
       })();
-
-      const qrCodeClass = Html5Qrcode;
 
       const statusEl = document.getElementById('status');
       const detailsEl = document.getElementById('details');
@@ -267,16 +260,6 @@
       approveButton.addEventListener('click', approveCurrentCode);
 
       async function startScanner() {
-        if (isScanning && scanner) {
-          setStatus('Camera is already running.', 'info');
-          return;
-        }
-
-        if (!qrCodeClass) {
-          setStatus('Scanner library failed to load. Please refresh the page.', 'error');
-          return;
-        }
-
         if (!navigator.mediaDevices?.getUserMedia) {
           setStatus('This browser does not support camera scanning.', 'error');
           return;
@@ -291,24 +274,44 @@
           startScanButton.disabled = true;
           setStatus('Requesting camera access…', 'info');
 
-          if (!scanner) {
-            scanner = new qrCodeClass('reader');
-          }
+          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+          const video = document.createElement('video');
+          video.srcObject = stream;
+          video.setAttribute('playsinline', 'true');
+          video.muted = true;
+          const reader = document.getElementById('reader');
+          reader.innerHTML = '';
+          reader.appendChild(video);
+          await video.play();
 
-          await scanner.start(
-            { facingMode: 'environment' },
-            { fps: 10, qrbox: { width: 220, height: 220 } },
-            (decodedText) => {
-              manualCodeInput.value = decodedText;
-              requestVerification(decodedText);
-              scanner.stop().catch(() => {});
-              isScanning = false;
-            },
-            () => {}
-          );
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          let stopped = false;
+
+          const tick = () => {
+            if (stopped) return;
+            if (video.readyState >= 2) {
+              canvas.width = video.videoWidth;
+              canvas.height = video.videoHeight;
+              context.drawImage(video, 0, 0, canvas.width, canvas.height);
+              const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+              const code = jsQR(imageData.data, canvas.width, canvas.height);
+              if (code) {
+                stopped = true;
+                stream.getTracks().forEach((track) => track.stop());
+                reader.innerHTML = '';
+                manualCodeInput.value = code.data;
+                requestVerification(code.data);
+                setStatus('QR code detected.', 'success');
+                return;
+              }
+            }
+            requestAnimationFrame(tick);
+          };
 
           isScanning = true;
           setStatus('Camera ready. Point it at the QR code.', 'success');
+          tick();
         } catch (error) {
           isScanning = false;
           setStatus(error?.message || 'Unable to start the camera scanner.', 'error');
@@ -318,17 +321,14 @@
       }
 
       async function stopScanner() {
-        if (!scanner || !isScanning) {
+        if (!isScanning) {
           return;
         }
 
-        try {
-          await scanner.stop();
-          isScanning = false;
-          setStatus('Camera stopped.', 'info');
-        } catch (error) {
-          setStatus(error?.message || 'Unable to stop the camera scanner.', 'error');
-        }
+        const reader = document.getElementById('reader');
+        reader.innerHTML = '';
+        isScanning = false;
+        setStatus('Camera stopped.', 'info');
       }
 
       startScanButton.addEventListener('click', startScanner);
