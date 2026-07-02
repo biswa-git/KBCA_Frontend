@@ -227,6 +227,8 @@
           <div class="details-row"><span class="details-label">Name</span><span class="details-value">${user.full_name || '—'}</span></div>
           <div class="details-row"><span class="details-label">Adults</span><span class="details-value">${user.registered_adults}</span></div>
           <div class="details-row"><span class="details-label">Children (6-12)</span><span class="details-value">${user.registered_children_6_12}</span></div>
+          <div class="details-row"><span class="details-label">Children (< 6)</span><span class="details-value">${user.registered_children_under_6}</span></div>
+          <div class="details-row"><span class="details-label">Amount Paid</span><span class="details-value">₹${user.amount_paid}</span></div>
           <div class="details-row"><span class="details-label">Status</span><span class="details-value" style="color: ${user.muhurat_entry ? 'var(--danger)' : 'var(--success)'}">${user.muhurat_entry ? 'Already Approved' : 'Ready'}</span></div>
         `;
         detailsEl.classList.add('visible');
@@ -281,8 +283,15 @@
         } catch (error) {
           renderDetails(null);
           setStatus(error.message || 'Unable to verify code.', 'error');
-          approveActions.style.display = 'flex';
-          approveButton.disabled = true;
+          approveActions.style.display = 'none';
+          scanActions.style.display = 'flex';
+          
+          // Auto-resume scanner after a short delay so they can try again
+          setTimeout(() => {
+            if (currentCode === code) {
+              resetUI();
+            }
+          }, 2500);
         }
       }
 
