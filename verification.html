@@ -232,7 +232,8 @@
         } catch (error) {
           currentResult = null;
           renderDetails(null);
-          setStatus(error.message || 'Unable to verify code.', 'error');
+          setStatus(`Debug: ${error.name}: ${error.message}. apiBase: ${apiBase}`, 'error');
+          console.error(error);
         } finally {
           verifyButton.disabled = false;
         }
